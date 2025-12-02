@@ -1,6 +1,6 @@
 # Drift - Documentation Sync Detector
 
-![Drift Logo](./images/icon.png)
+<img src="./images/icon.png" width="128" alt="Drift Logo" />
 
 **Drift** detects when your documentation drifts out of sync with your code. It pairs documentation blocks (JSDoc, docstrings, etc.) with their code anchors and flags potential staleness when the code changes.
 
