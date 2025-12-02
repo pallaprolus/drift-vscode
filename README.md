@@ -46,13 +46,13 @@ A sidebar view shows all documentation drift issues, organized by file and sorte
 
 1. Open VS Code
 2. Go to Extensions (Ctrl+Shift+X)
-3. Search for "Drift"
+3. Search for "Drift - Documentation Sync Detector"
 4. Click Install
 
 Or install from the command line:
 
 ```bash
-code --install-extension drift-extension.drift
+code --install-extension pallaprolus.drift
 ```
 
 ## Usage
