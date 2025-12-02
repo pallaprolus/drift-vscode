@@ -2,7 +2,7 @@
   "name": "drift",
   "displayName": "Drift - Documentation Sync Detector",
   "description": "Detect when documentation drifts out of sync with your code",
-  "version": "0.2.0",
+  "version": "0.2.4",
   "publisher": "pallaprolus",
   "icon": "images/icon.png",
   "repository": {
@@ -129,22 +129,30 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run package",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "npm run check-types && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
-    "package": "vsce package"
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.10.0",
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^2.22.0",
+    "chai": "^6.2.1",
+    "esbuild": "^0.27.0",
     "eslint": "^8.54.0",
-    "typescript": "^5.3.0",
-    "@vscode/vsce": "^2.22.0"
+    "glob": "^13.0.0",
+    "mocha": "^11.7.5",
+    "typescript": "^5.3.0"
   },
   "dependencies": {
     "minimatch": "^9.0.3"

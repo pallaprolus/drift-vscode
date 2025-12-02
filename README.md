@@ -1,6 +1,6 @@
 # Drift - Documentation Sync Detector
 
-![Drift Logo](images/drift-logo.png)
+![Drift Logo](https://raw.githubusercontent.com/pallaprolus/drift-vscode/main/images/icon.png)
 
 **Drift** detects when your documentation drifts out of sync with your code. It pairs documentation blocks (JSDoc, docstrings, etc.) with their code anchors and flags potential staleness when the code changes.
 
@@ -198,6 +198,12 @@ To add support for a new language:
 - [ ] Git integration for change tracking
 - [ ] Export reports (HTML, Markdown)
 
+## Community & Impact
+ 
+Drift is built to help developers maintain high-quality documentation. If this tool has saved you time or prevented bugs, I'd love to hear your story!
+ 
+-   **Used in a project?** Add a badge to your README: `[![Drift](https://img.shields.io/badge/docs-drift-blue)](https://marketplace.visualstudio.com/items?itemName=pallaprolus.drift)`
+ 
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.

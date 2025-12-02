@@ -20,11 +20,13 @@ export function generatePairId(filePath: string, lineNumber: number): string {
 export function calculateSimilarity(str1: string, str2: string): number {
     const set1 = new Set(tokenize(str1));
     const set2 = new Set(tokenize(str2));
-    
+
     const intersection = new Set([...set1].filter(x => set2.has(x)));
     const union = new Set([...set1, ...set2]);
-    
-    if (union.size === 0) return 1;
+
+    if (union.size === 0) {
+        return 1;
+    }
     return intersection.size / union.size;
 }
 
@@ -46,7 +48,7 @@ export function extractIdentifiers(code: string): string[] {
     // Match typical identifier patterns
     const identifierPattern = /\b[a-zA-Z_][a-zA-Z0-9_]*\b/g;
     const matches = code.match(identifierPattern) || [];
-    
+
     // Filter out common keywords
     const keywords = new Set([
         'function', 'const', 'let', 'var', 'class', 'interface', 'type',
@@ -60,7 +62,7 @@ export function extractIdentifiers(code: string): string[] {
         'func', 'struct', 'impl', 'trait', 'pub', 'mut', 'fn', 'mod',
         'package', 'main', 'fmt', 'println', 'print'
     ]);
-    
+
     return matches.filter(id => !keywords.has(id.toLowerCase()));
 }
 
@@ -74,7 +76,7 @@ export function extractDocParamNames(doc: string): string[] {
         /@param\s+(\w+)/g,                    // Simple: @param name
         /\*\s+(\w+)\s+-/g,                    // Go-style: * name -
     ];
-    
+
     const names: string[] = [];
     for (const pattern of patterns) {
         let match;
@@ -82,7 +84,7 @@ export function extractDocParamNames(doc: string): string[] {
             names.push(match[1]);
         }
     }
-    
+
     return [...new Set(names)];
 }
 
@@ -95,14 +97,14 @@ export function extractDocReturnType(doc: string): string | undefined {
         /:returns?:\s+(\w+)/,                 // Python: :returns: type
         /@returns?\s+(\w+)/,                  // Simple: @return type
     ];
-    
+
     for (const pattern of patterns) {
         const match = doc.match(pattern);
         if (match) {
             return match[1].trim();
         }
     }
-    
+
     return undefined;
 }
 
@@ -126,12 +128,16 @@ export function containsIgnoreCase(haystack: string, needle: string): boolean {
 export function levenshteinDistance(str1: string, str2: string): number {
     const m = str1.length;
     const n = str2.length;
-    
+
     const dp: number[][] = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
-    
-    for (let i = 0; i <= m; i++) dp[i][0] = i;
-    for (let j = 0; j <= n; j++) dp[0][j] = j;
-    
+
+    for (let i = 0; i <= m; i++) {
+        dp[i][0] = i;
+    }
+    for (let j = 0; j <= n; j++) {
+        dp[0][j] = j;
+    }
+
     for (let i = 1; i <= m; i++) {
         for (let j = 1; j <= n; j++) {
             if (str1[i - 1] === str2[j - 1]) {
@@ -141,7 +147,7 @@ export function levenshteinDistance(str1: string, str2: string): number {
             }
         }
     }
-    
+
     return dp[m][n];
 }
 
@@ -149,11 +155,13 @@ export function levenshteinDistance(str1: string, str2: string): number {
  * Find the closest matching string from a list
  */
 export function findClosestMatch(target: string, candidates: string[]): { match: string; distance: number } | null {
-    if (candidates.length === 0) return null;
-    
+    if (candidates.length === 0) {
+        return null;
+    }
+
     let closest = candidates[0];
     let minDistance = levenshteinDistance(target, closest);
-    
+
     for (let i = 1; i < candidates.length; i++) {
         const distance = levenshteinDistance(target, candidates[i]);
         if (distance < minDistance) {
@@ -161,7 +169,7 @@ export function findClosestMatch(target: string, candidates: string[]): { match:
             closest = candidates[i];
         }
     }
-    
+
     return { match: closest, distance: minDistance };
 }
 
@@ -173,9 +181,11 @@ export function debounce<TArgs extends unknown[]>(
     wait: number
 ): (...args: TArgs) => void {
     let timeout: NodeJS.Timeout | null = null;
-    
+
     return (...args: TArgs) => {
-        if (timeout) clearTimeout(timeout);
+        if (timeout) {
+            clearTimeout(timeout);
+        }
         timeout = setTimeout(() => func(...args), wait);
     };
 }
@@ -188,7 +198,7 @@ export function throttle<TArgs extends unknown[]>(
     limit: number
 ): (...args: TArgs) => void {
     let inThrottle = false;
-    
+
     return (...args: TArgs) => {
         if (!inThrottle) {
             func(...args);
