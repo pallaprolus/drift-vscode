@@ -1,6 +1,6 @@
 # Drift - Documentation Sync Detector
 
-![Drift Logo](https://raw.githubusercontent.com/pallaprolus/drift-vscode/main/images/icon.png)
+![Drift Logo](./images/icon.png)
 
 **Drift** detects when your documentation drifts out of sync with your code. It pairs documentation blocks (JSDoc, docstrings, etc.) with their code anchors and flags potential staleness when the code changes.
 
