@@ -1,0 +1,161 @@
+{
+  "name": "drift",
+  "displayName": "Drift - Documentation Sync Detector",
+  "description": "Detect when documentation drifts out of sync with your code",
+  "version": "0.2.0",
+  "publisher": "drift-extension",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palaprolu-synergy/drift-vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Linters"
+  ],
+  "keywords": [
+    "documentation",
+    "docs",
+    "sync",
+    "drift",
+    "comments",
+    "maintenance"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "drift.scanWorkspace",
+        "title": "Drift: Scan Workspace for Documentation Drift"
+      },
+      {
+        "command": "drift.scanCurrentFile",
+        "title": "Drift: Scan Current File"
+      },
+      {
+        "command": "drift.markAsReviewed",
+        "title": "Drift: Mark as Reviewed"
+      },
+      {
+        "command": "drift.showDashboard",
+        "title": "Drift: Show Staleness Dashboard"
+      },
+      {
+        "command": "drift.refreshDashboard",
+        "title": "Drift: Refresh Dashboard"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "driftDashboard",
+          "name": "Drift Dashboard",
+          "icon": "$(book)",
+          "contextualTitle": "Documentation Drift"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "drift.refreshDashboard",
+          "when": "view == driftDashboard",
+          "group": "navigation"
+        },
+        {
+          "command": "drift.scanWorkspace",
+          "when": "view == driftDashboard",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "drift.markAsReviewed",
+          "when": "view == driftDashboard && viewItem == driftItem"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Drift",
+      "properties": {
+        "drift.enableGutterIcons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show gutter icons for potentially stale documentation"
+        },
+        "drift.enableInlineDecorations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline decorations for drift warnings"
+        },
+        "drift.excludePatterns": {
+          "type": "array",
+          "default": [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/.git/**"
+          ],
+          "description": "Glob patterns to exclude from scanning"
+        },
+        "drift.supportedLanguages": {
+          "type": "array",
+          "default": [
+            "javascript",
+            "typescript",
+            "python",
+            "java",
+            "go",
+            "rust",
+            "c",
+            "cpp"
+          ],
+          "description": "Languages to scan for documentation drift"
+        },
+        "drift.driftThreshold": {
+          "type": "number",
+          "default": 0.3,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence threshold (0-1) for flagging documentation as potentially stale"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pallaprolus/drift-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/pallaprolus/drift-vscode/issues"
+  },
+  "homepage": "https://github.com/pallaprolus/drift-vscode#readme",
+  "license": "MIT"
+}
