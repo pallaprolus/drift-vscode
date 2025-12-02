@@ -1,0 +1,353 @@
+import * as vscode from 'vscode';
+import {
+    DocCodePair,
+    DocType,
+    ParsedDoc,
+    CodeSignature,
+    CodeType,
+    ParameterInfo,
+    DocParam,
+    LanguageParser
+} from '../models/types';
+import { hashContent, generatePairId } from '../utils/helpers';
+
+/**
+ * Base parser with common functionality for all languages
+ */
+export abstract class BaseParser implements LanguageParser {
+    abstract languageId: string;
+    abstract fileExtensions: string[];
+    
+    abstract parseDocCodePairs(document: vscode.TextDocument): Promise<DocCodePair[]>;
+    
+    /**
+     * Parse documentation content based on doc type
+     */
+    parseDocumentation(content: string, docType: DocType): ParsedDoc {
+        switch (docType) {
+            case DocType.JSDoc:
+            case DocType.JavaDoc:
+                return this.parseJSDocStyle(content);
+            case DocType.PyDoc:
+                return this.parsePyDocStyle(content);
+            case DocType.GoDoc:
+                return this.parseGoDocStyle(content);
+            case DocType.RustDoc:
+                return this.parseRustDocStyle(content);
+            default:
+                return this.parseGenericComment(content);
+        }
+    }
+    
+    /**
+     * Extract code signature - to be implemented by subclasses
+     */
+    abstract extractCodeSignature(content: string, range: vscode.Range): CodeSignature;
+    
+    /**
+     * Parse JSDoc/JavaDoc style documentation
+     */
+    protected parseJSDocStyle(content: string): ParsedDoc {
+        const result: ParsedDoc = {
+            description: '',
+            params: [],
+            tags: []
+        };
+        
+        // Remove comment markers
+        const cleanContent = content
+            .replace(/^\/\*\*?/gm, '')
+            .replace(/\*\/$/gm, '')
+            .replace(/^\s*\*\s?/gm, '')
+            .trim();
+        
+        const lines = cleanContent.split('\n');
+        const descriptionLines: string[] = [];
+        
+        for (const line of lines) {
+            const trimmed = line.trim();
+            
+            // Parse @param
+            const paramMatch = trimmed.match(/@param\s+(?:\{([^}]*)\}\s+)?(\w+)\s*(.*)/);
+            if (paramMatch) {
+                result.params.push({
+                    name: paramMatch[2],
+                    type: paramMatch[1],
+                    description: paramMatch[3] || '',
+                    isOptional: paramMatch[1]?.includes('=') || false
+                });
+                continue;
+            }
+            
+            // Parse @returns/@return
+            const returnMatch = trimmed.match(/@returns?\s+(?:\{([^}]*)\}\s*)?(.*)/);
+            if (returnMatch) {
+                result.returns = {
+                    type: returnMatch[1],
+                    description: returnMatch[2] || ''
+                };
+                continue;
+            }
+            
+            // Parse @throws/@exception
+            const throwsMatch = trimmed.match(/@(?:throws|exception)\s+(?:\{([^}]*)\}\s*)?(.*)/);
+            if (throwsMatch) {
+                if (!result.throws) result.throws = [];
+                result.throws.push({
+                    type: throwsMatch[1],
+                    description: throwsMatch[2] || ''
+                });
+                continue;
+            }
+            
+            // Parse @deprecated
+            const deprecatedMatch = trimmed.match(/@deprecated\s*(.*)/);
+            if (deprecatedMatch) {
+                result.deprecated = deprecatedMatch[1] || 'Deprecated';
+                continue;
+            }
+            
+            // Parse @since
+            const sinceMatch = trimmed.match(/@since\s+(.*)/);
+            if (sinceMatch) {
+                result.since = sinceMatch[1];
+                continue;
+            }
+            
+            // Parse @example
+            const exampleMatch = trimmed.match(/@example\s*(.*)/);
+            if (exampleMatch) {
+                if (!result.examples) result.examples = [];
+                result.examples.push(exampleMatch[1] || '');
+                continue;
+            }
+            
+            // Parse other tags
+            const tagMatch = trimmed.match(/@(\w+)\s*(.*)/);
+            if (tagMatch) {
+                result.tags.push({
+                    name: tagMatch[1],
+                    value: tagMatch[2] || ''
+                });
+                continue;
+            }
+            
+            // Add to description if not a tag
+            if (!trimmed.startsWith('@')) {
+                descriptionLines.push(trimmed);
+            }
+        }
+        
+        result.description = descriptionLines.join(' ').trim();
+        return result;
+    }
+    
+    /**
+     * Parse Python docstring style documentation
+     */
+    protected parsePyDocStyle(content: string): ParsedDoc {
+        const result: ParsedDoc = {
+            description: '',
+            params: [],
+            tags: []
+        };
+        
+        // Remove docstring quotes
+        const cleanContent = content
+            .replace(/^['"`]{3}/gm, '')
+            .replace(/['"`]{3}$/gm, '')
+            .trim();
+        
+        const sections = cleanContent.split(/\n\s*\n/);
+        
+        if (sections.length > 0) {
+            result.description = sections[0].trim();
+        }
+        
+        // Parse Args/Parameters section
+        const argsPattern = /(?:Args|Parameters|Params):\s*\n((?:\s+\w+.*\n?)+)/gi;
+        const argsMatch = cleanContent.match(argsPattern);
+        if (argsMatch) {
+            const paramPattern = /^\s+(\w+)(?:\s*\(([^)]+)\))?:\s*(.*)$/gm;
+            let paramMatch;
+            while ((paramMatch = paramPattern.exec(argsMatch[0])) !== null) {
+                result.params.push({
+                    name: paramMatch[1],
+                    type: paramMatch[2],
+                    description: paramMatch[3] || '',
+                    isOptional: false
+                });
+            }
+        }
+        
+        // Parse Returns section
+        const returnsPattern = /Returns:\s*\n?\s*(?:(\w+):\s*)?(.+)/i;
+        const returnsMatch = cleanContent.match(returnsPattern);
+        if (returnsMatch) {
+            result.returns = {
+                type: returnsMatch[1],
+                description: returnsMatch[2] || ''
+            };
+        }
+        
+        // Parse Raises section
+        const raisesPattern = /Raises:\s*\n((?:\s+\w+.*\n?)+)/gi;
+        const raisesMatch = cleanContent.match(raisesPattern);
+        if (raisesMatch) {
+            result.throws = [];
+            const throwPattern = /^\s+(\w+):\s*(.*)$/gm;
+            let throwMatch;
+            while ((throwMatch = throwPattern.exec(raisesMatch[0])) !== null) {
+                result.throws.push({
+                    type: throwMatch[1],
+                    description: throwMatch[2] || ''
+                });
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Parse Go-style documentation (comment blocks before declarations)
+     */
+    protected parseGoDocStyle(content: string): ParsedDoc {
+        const result: ParsedDoc = {
+            description: '',
+            params: [],
+            tags: []
+        };
+        
+        // Go docs are simple comment lines
+        const cleanContent = content
+            .replace(/^\/\/\s?/gm, '')
+            .trim();
+        
+        result.description = cleanContent;
+        
+        // Go doesn't have formal param documentation, but we can extract
+        // mentioned parameter names
+        const words = cleanContent.split(/\s+/);
+        // Parameters are often mentioned in the description
+        
+        return result;
+    }
+    
+    /**
+     * Parse Rust doc comments (//! or ///)
+     */
+    protected parseRustDocStyle(content: string): ParsedDoc {
+        const result: ParsedDoc = {
+            description: '',
+            params: [],
+            tags: []
+        };
+        
+        const cleanContent = content
+            .replace(/^\/\/[\/!]\s?/gm, '')
+            .trim();
+        
+        const lines = cleanContent.split('\n');
+        const descriptionLines: string[] = [];
+        
+        for (const line of lines) {
+            const trimmed = line.trim();
+            
+            // Parse # Arguments section
+            if (trimmed === '# Arguments') {
+                continue;
+            }
+            
+            // Parse argument items
+            const argMatch = trimmed.match(/^\*\s+`(\w+)`\s*-\s*(.*)$/);
+            if (argMatch) {
+                result.params.push({
+                    name: argMatch[1],
+                    description: argMatch[2] || '',
+                    isOptional: false
+                });
+                continue;
+            }
+            
+            // Parse # Returns section
+            if (trimmed === '# Returns') {
+                continue;
+            }
+            
+            // Parse # Examples section
+            if (trimmed === '# Examples') {
+                if (!result.examples) result.examples = [];
+                continue;
+            }
+            
+            descriptionLines.push(trimmed);
+        }
+        
+        result.description = descriptionLines.join(' ').trim();
+        return result;
+    }
+    
+    /**
+     * Parse generic comment without specific format
+     */
+    protected parseGenericComment(content: string): ParsedDoc {
+        const cleanContent = content
+            .replace(/^\/\*+/gm, '')
+            .replace(/\*+\/$/gm, '')
+            .replace(/^\/\/\s?/gm, '')
+            .replace(/^\s*\*\s?/gm, '')
+            .replace(/^#\s?/gm, '')
+            .trim();
+        
+        return {
+            description: cleanContent,
+            params: [],
+            tags: []
+        };
+    }
+    
+    /**
+     * Create a DocCodePair from parsed data
+     */
+    protected createPair(
+        filePath: string,
+        docRange: vscode.Range,
+        docContent: string,
+        docType: DocType,
+        codeRange: vscode.Range,
+        codeContent: string,
+        codeSignature: CodeSignature
+    ): DocCodePair {
+        return {
+            id: generatePairId(filePath, docRange.start.line),
+            filePath,
+            docRange,
+            docContent,
+            docType,
+            codeRange,
+            codeContent,
+            codeSignature,
+            driftScore: 0,
+            driftReasons: [],
+            lastAnalyzed: new Date(),
+            isReviewed: false
+        };
+    }
+    
+    /**
+     * Helper to create a basic code signature
+     */
+    protected createBasicSignature(
+        name: string,
+        type: CodeType,
+        content: string
+    ): CodeSignature {
+        return {
+            name,
+            type,
+            parameters: [],
+            modifiers: [],
+            hash: hashContent(content)
+        };
+    }
+}

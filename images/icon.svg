@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f39c12;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e74c3c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="docGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background rounded rectangle -->
+  <rect x="4" y="4" width="120" height="120" rx="20" ry="20" fill="url(#bgGrad)"/>
+  
+  <!-- Document icon (left side) -->
+  <g transform="translate(20, 25)">
+    <!-- Document background -->
+    <path d="M0 8 L0 70 Q0 75 5 75 L35 75 Q40 75 40 70 L40 18 L30 8 L5 8 Q0 8 0 13 Z" 
+          fill="url(#docGrad)" opacity="0.9"/>
+    <!-- Document fold -->
+    <path d="M30 8 L30 18 L40 18 Z" fill="#1a5276"/>
+    <!-- Document lines -->
+    <line x1="8" y1="30" x2="32" y2="30" stroke="#fff" stroke-width="2" opacity="0.7"/>
+    <line x1="8" y1="40" x2="28" y2="40" stroke="#fff" stroke-width="2" opacity="0.7"/>
+    <line x1="8" y1="50" x2="30" y2="50" stroke="#fff" stroke-width="2" opacity="0.7"/>
+    <line x1="8" y1="60" x2="24" y2="60" stroke="#fff" stroke-width="2" opacity="0.7"/>
+  </g>
+  
+  <!-- Code brackets (right side) -->
+  <g transform="translate(68, 30)">
+    <!-- Opening bracket -->
+    <text x="0" y="35" font-family="monospace" font-size="40" font-weight="bold" fill="#2ecc71">{</text>
+    <!-- Closing bracket -->
+    <text x="25" y="35" font-family="monospace" font-size="40" font-weight="bold" fill="#2ecc71">}</text>
+  </g>
+  
+  <!-- Drift wave/connection between doc and code -->
+  <path d="M58 64 Q68 54 78 64 Q88 74 98 64" 
+        fill="none" 
+        stroke="url(#accentGrad)" 
+        stroke-width="4" 
+        stroke-linecap="round"
+        opacity="0.9"/>
+  
+  <!-- Warning indicator -->
+  <circle cx="100" cy="35" r="12" fill="#e74c3c"/>
+  <text x="100" y="41" font-family="Arial" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">!</text>
+  
+  <!-- Subtle glow effect -->
+  <circle cx="64" cy="64" r="50" fill="none" stroke="#f39c12" stroke-width="1" opacity="0.2"/>
+</svg>
