@@ -2,6 +2,9 @@ import * as vscode from 'vscode';
 import { LanguageParser, DocCodePair } from '../models/types';
 import { TypeScriptParser } from './typescriptParser';
 import { PythonParser } from './pythonParser';
+import { GoParser } from './goParser';
+import { RustParser } from './rustParser';
+import { JavaParser } from './javaParser';
 import { DriftLogger } from '../utils/logger';
 
 /**
@@ -37,6 +40,15 @@ export class ParserRegistry {
 
         const pyParser = new PythonParser();
         this.registerParser(pyParser);
+
+        const goParser = new GoParser();
+        this.registerParser(goParser);
+
+        const rustParser = new RustParser();
+        this.registerParser(rustParser);
+
+        const javaParser = new JavaParser();
+        this.registerParser(javaParser);
     }
 
     /**

@@ -40,7 +40,10 @@ A sidebar view shows all documentation drift issues, organized by file and sorte
 
 - TypeScript / JavaScript
 - Python
-- (More coming soon: Go, Rust, Java, C/C++)
+- Go
+- Rust
+- Java
+- (More coming soon: C/C++)
 
 ## Installation
 
@@ -190,9 +193,9 @@ To add support for a new language:
 
 ## Roadmap
 
-- [ ] Go support
-- [ ] Rust support
-- [ ] Java support
+- [x] Go support
+- [x] Rust support
+- [x] Java support
 - [ ] README code block synchronization
 - [ ] AI-powered semantic drift detection
 - [ ] Git integration for change tracking

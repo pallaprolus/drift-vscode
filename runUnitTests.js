@@ -2,6 +2,27 @@ const Mocha = require('mocha');
 const path = require('path');
 const glob = require('glob');
 
+// Mock VS Code module for unit tests
+const Module = require('module');
+const originalRequire = Module.prototype.require;
+
+Module.prototype.require = function (request) {
+    if (request === 'vscode') {
+        return {
+            Range: class {
+                constructor(startLine, startChar, endLine, endChar) {
+                    this.start = { line: startLine, character: startChar };
+                    this.end = { line: endLine, character: endChar };
+                }
+            },
+            Uri: {
+                file: (path) => ({ fsPath: path, path: path })
+            }
+        };
+    }
+    return originalRequire.apply(this, arguments);
+};
+
 async function run() {
     const mocha = new Mocha({
         ui: 'tdd',

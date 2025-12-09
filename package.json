@@ -2,7 +2,7 @@
   "name": "drift",
   "displayName": "Drift - Documentation Sync Detector",
   "description": "Detect when documentation drifts out of sync with your code",
-  "version": "0.2.8",
+  "version": "0.3.0",
   "publisher": "pallaprolus",
   "icon": "images/icon.png",
   "repository": {
@@ -110,8 +110,8 @@
             "javascript",
             "typescript",
             "python",
-            "java",
             "go",
+            "java",
             "rust",
             "c",
             "cpp"
