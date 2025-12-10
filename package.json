@@ -2,7 +2,7 @@
   "name": "drift",
   "displayName": "Drift - Documentation Sync Detector",
   "description": "Detect when documentation drifts out of sync with your code",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "publisher": "pallaprolus",
   "icon": "images/icon.png",
   "repository": {

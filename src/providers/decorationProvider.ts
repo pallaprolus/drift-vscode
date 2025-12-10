@@ -8,67 +8,50 @@ export class DecorationProvider {
     private gutterDecorationType: vscode.TextEditorDecorationType;
     private inlineDecorationTypes: Map<DriftSeverity, vscode.TextEditorDecorationType>;
     private activeDecorations: Map<string, vscode.TextEditorDecorationType[]> = new Map();
-    
+
     constructor() {
         // Create gutter decoration type
         this.gutterDecorationType = vscode.window.createTextEditorDecorationType({
             gutterIconPath: this.getIconPath('warning'),
             gutterIconSize: 'contain'
         });
-        
+
         // Create inline decoration types for different severities
         this.inlineDecorationTypes = new Map([
             [DriftSeverity.Critical, vscode.window.createTextEditorDecorationType({
                 backgroundColor: 'rgba(255, 0, 0, 0.1)',
                 border: '1px solid rgba(255, 0, 0, 0.3)',
                 borderRadius: '3px',
-                after: {
-                    contentText: ' ⚠ Documentation may be stale (critical)',
-                    color: 'rgba(255, 100, 100, 0.8)',
-                    fontStyle: 'italic',
-                    margin: '0 0 0 1em'
-                }
+                overviewRulerColor: 'rgba(255, 0, 0, 0.8)',
+                overviewRulerLane: vscode.OverviewRulerLane.Right
             })],
             [DriftSeverity.High, vscode.window.createTextEditorDecorationType({
                 backgroundColor: 'rgba(255, 165, 0, 0.1)',
                 border: '1px solid rgba(255, 165, 0, 0.3)',
                 borderRadius: '3px',
-                after: {
-                    contentText: ' ⚠ Documentation may be stale',
-                    color: 'rgba(255, 180, 100, 0.8)',
-                    fontStyle: 'italic',
-                    margin: '0 0 0 1em'
-                }
+                overviewRulerColor: 'rgba(255, 165, 0, 0.8)',
+                overviewRulerLane: vscode.OverviewRulerLane.Right
             })],
             [DriftSeverity.Medium, vscode.window.createTextEditorDecorationType({
                 backgroundColor: 'rgba(255, 255, 0, 0.05)',
                 border: '1px solid rgba(255, 255, 0, 0.2)',
-                borderRadius: '3px',
-                after: {
-                    contentText: ' ○ Review documentation',
-                    color: 'rgba(200, 200, 100, 0.7)',
-                    fontStyle: 'italic',
-                    margin: '0 0 0 1em'
-                }
+                borderRadius: '3px'
             })],
             [DriftSeverity.Low, vscode.window.createTextEditorDecorationType({
-                after: {
-                    contentText: ' · Minor drift detected',
-                    color: 'rgba(150, 150, 150, 0.5)',
-                    fontStyle: 'italic',
-                    margin: '0 0 0 1em'
-                }
+                // No visible decoration for low drift, just gutter if enabled
+                // or maybe a very subtle underline
+                textDecoration: 'underline dotted rgba(150, 150, 150, 0.5)'
             })]
         ]);
     }
-    
+
     /**
      * Apply decorations for a list of doc-code pairs
      */
     applyDecorations(editor: vscode.TextEditor, pairs: DocCodePair[], config: { enableGutter: boolean; enableInline: boolean; threshold: number }): void {
         // Clear existing decorations for this editor
         this.clearDecorations(editor);
-        
+
         const gutterRanges: vscode.DecorationOptions[] = [];
         const inlineRanges: Map<DriftSeverity, vscode.DecorationOptions[]> = new Map([
             [DriftSeverity.Critical, []],
@@ -76,19 +59,19 @@ export class DecorationProvider {
             [DriftSeverity.Medium, []],
             [DriftSeverity.Low, []]
         ]);
-        
+
         for (const pair of pairs) {
             // Skip if below threshold or already reviewed
             if (pair.driftScore < config.threshold || pair.isReviewed) {
                 continue;
             }
-            
+
             // Determine severity based on drift score
             const severity = this.getSeverityFromScore(pair.driftScore);
-            
+
             // Create hover message
             const hoverMessage = this.createHoverMessage(pair);
-            
+
             // Add gutter decoration
             if (config.enableGutter) {
                 gutterRanges.push({
@@ -96,28 +79,27 @@ export class DecorationProvider {
                     hoverMessage
                 });
             }
-            
+
             // Add inline decoration
             if (config.enableInline) {
                 const inlineRange = inlineRanges.get(severity);
                 if (inlineRange) {
+                    // Place decoration at the end of the line
+                    const line = editor.document.lineAt(pair.docRange.start.line);
                     inlineRange.push({
-                        range: new vscode.Range(
-                            pair.docRange.start,
-                            new vscode.Position(pair.docRange.start.line, pair.docRange.start.character + 3)
-                        ),
+                        range: new vscode.Range(line.range.end, line.range.end),
                         hoverMessage
                     });
                 }
             }
         }
-        
+
         // Apply gutter decorations
         if (config.enableGutter && gutterRanges.length > 0) {
             editor.setDecorations(this.gutterDecorationType, gutterRanges);
             this.trackDecoration(editor.document.uri.toString(), this.gutterDecorationType);
         }
-        
+
         // Apply inline decorations by severity
         if (config.enableInline) {
             for (const [severity, ranges] of inlineRanges) {
@@ -131,14 +113,14 @@ export class DecorationProvider {
             }
         }
     }
-    
+
     /**
      * Clear decorations for an editor
      */
     clearDecorations(editor: vscode.TextEditor): void {
         const uri = editor.document.uri.toString();
         const decorations = this.activeDecorations.get(uri);
-        
+
         if (decorations) {
             for (const decoration of decorations) {
                 editor.setDecorations(decoration, []);
@@ -146,7 +128,7 @@ export class DecorationProvider {
             this.activeDecorations.delete(uri);
         }
     }
-    
+
     /**
      * Clear all decorations across all editors
      */
@@ -156,7 +138,7 @@ export class DecorationProvider {
         }
         this.activeDecorations.clear();
     }
-    
+
     /**
      * Track a decoration for later cleanup
      */
@@ -167,7 +149,7 @@ export class DecorationProvider {
         }
         this.activeDecorations.set(uri, existing);
     }
-    
+
     /**
      * Get severity level from drift score
      */
@@ -177,21 +159,21 @@ export class DecorationProvider {
         if (score >= 0.4) return DriftSeverity.Medium;
         return DriftSeverity.Low;
     }
-    
+
     /**
      * Create hover message for a drift warning
      */
     private createHoverMessage(pair: DocCodePair): vscode.MarkdownString {
         const md = new vscode.MarkdownString();
         md.isTrusted = true;
-        
+
         const severity = this.getSeverityFromScore(pair.driftScore);
         const icon = this.getSeverityIcon(severity);
-        
+
         md.appendMarkdown(`## ${icon} Documentation Drift Detected\n\n`);
         md.appendMarkdown(`**Drift Score:** ${Math.round(pair.driftScore * 100)}%\n\n`);
         md.appendMarkdown(`**Function:** \`${pair.codeSignature.name}\`\n\n`);
-        
+
         if (pair.driftReasons.length > 0) {
             md.appendMarkdown('### Issues Found:\n\n');
             for (const reason of pair.driftReasons) {
@@ -203,16 +185,16 @@ export class DecorationProvider {
                 md.appendMarkdown('\n');
             }
         }
-        
+
         // Add quick actions
         md.appendMarkdown('---\n\n');
         md.appendMarkdown(`[Mark as Reviewed](command:drift.markAsReviewed?${encodeURIComponent(JSON.stringify({ id: pair.id }))})`);
         md.appendMarkdown(' | ');
         md.appendMarkdown(`[Go to Code](command:drift.goToCode?${encodeURIComponent(JSON.stringify({ line: pair.codeRange.start.line }))})`);
-        
+
         return md;
     }
-    
+
     /**
      * Get icon for severity level
      */
@@ -225,7 +207,7 @@ export class DecorationProvider {
             default: return '❓';
         }
     }
-    
+
     /**
      * Get path to gutter icon
      */
@@ -238,7 +220,7 @@ export class DecorationProvider {
             </svg>`
         )}`);
     }
-    
+
     /**
      * Dispose of all decoration types
      */
