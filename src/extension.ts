@@ -133,10 +133,8 @@ function registerCommands(context: vscode.ExtensionContext): void {
                         `(${stats.critical} critical, ${stats.high} high, ${stats.medium} medium, ${stats.low} low)`
                     );
 
-                    vscode.window.showInformationMessage(
-                        `Drift scan complete: ${stats.total} potential issues found ` +
-                        `(${stats.critical} critical, ${stats.high} high, ${stats.medium} medium, ${stats.low} low)`
-                    );
+                    // Auto-open dashboard based on user feedback
+                    vscode.commands.executeCommand('drift.showDashboard');
 
                     DriftLogger.log(`Scan complete: ${pairs.length} doc-code pairs analyzed`);
                 }
