@@ -1,45 +1,422 @@
-"use strict";var ft=Object.create;var ee=Object.defineProperty;var mt=Object.getOwnPropertyDescriptor;var gt=Object.getOwnPropertyNames;var vt=Object.getPrototypeOf,wt=Object.prototype.hasOwnProperty;var $e=(o,e)=>()=>(e||o((e={exports:{}}).exports,e),e.exports),yt=(o,e)=>{for(var t in e)ee(o,t,{get:e[t],enumerable:!0})},Ae=(o,e,t,s)=>{if(e&&typeof e=="object"||typeof e=="function")for(let r of gt(e))!wt.call(o,r)&&r!==t&&ee(o,r,{get:()=>e[r],enumerable:!(s=mt(e,r))||s.enumerable});return o};var C=(o,e,t)=>(t=o!=null?ft(vt(o)):{},Ae(e||!o||!o.__esModule?ee(t,"default",{value:o,enumerable:!0}):t,o)),Dt=o=>Ae(ee({},"__esModule",{value:!0}),o);var Je=$e((Er,Ue)=>{"use strict";Ue.exports=Be;function Be(o,e,t){o instanceof RegExp&&(o=Ge(o,t)),e instanceof RegExp&&(e=Ge(e,t));var s=He(o,e,t);return s&&{start:s[0],end:s[1],pre:t.slice(0,s[0]),body:t.slice(s[0]+o.length,s[1]),post:t.slice(s[1]+e.length)}}function Ge(o,e){var t=e.match(o);return t?t[0]:null}Be.range=He;function He(o,e,t){var s,r,n,i,a,c=t.indexOf(o),d=t.indexOf(e,c+1),l=c;if(c>=0&&d>0){if(o===e)return[c,d];for(s=[],n=t.length;l>=0&&!a;)l==c?(s.push(l),c=t.indexOf(o,l+1)):s.length==1?a=[s.pop(),d]:(r=s.pop(),r<n&&(n=r,i=d),d=t.indexOf(e,l+1)),l=c<d&&c>=0?c:d;s.length&&(a=[n,i])}return a}});var et=$e((kr,Ye)=>{var Ve=Je();Ye.exports=St;var Ze="\0SLASH"+Math.random()+"\0",qe="\0OPEN"+Math.random()+"\0",be="\0CLOSE"+Math.random()+"\0",Qe="\0COMMA"+Math.random()+"\0",Xe="\0PERIOD"+Math.random()+"\0";function xe(o){return parseInt(o,10)==o?parseInt(o,10):o.charCodeAt(0)}function Pt(o){return o.split("\\\\").join(Ze).split("\\{").join(qe).split("\\}").join(be).split("\\,").join(Qe).split("\\.").join(Xe)}function Ct(o){return o.split(Ze).join("\\").split(qe).join("{").split(be).join("}").split(Qe).join(",").split(Xe).join(".")}function Ke(o){if(!o)return[""];var e=[],t=Ve("{","}",o);if(!t)return o.split(",");var s=t.pre,r=t.body,n=t.post,i=s.split(",");i[i.length-1]+="{"+r+"}";var a=Ke(n);return n.length&&(i[i.length-1]+=a.shift(),i.push.apply(i,a)),e.push.apply(e,i),e}function St(o){return o?(o.substr(0,2)==="{}"&&(o="\\{\\}"+o.substr(2)),Q(Pt(o),!0).map(Ct)):[]}function xt(o){return"{"+o+"}"}function bt(o){return/^-?0\d/.test(o)}function Tt(o,e){return o<=e}function Rt(o,e){return o>=e}function Q(o,e){var t=[],s=Ve("{","}",o);if(!s)return[o];var r=s.pre,n=s.post.length?Q(s.post,!1):[""];if(/\$$/.test(s.pre))for(var i=0;i<n.length;i++){var a=r+"{"+s.body+"}"+n[i];t.push(a)}else{var c=/^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(s.body),d=/^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(s.body),l=c||d,p=s.body.indexOf(",")>=0;if(!l&&!p)return s.post.match(/,(?!,).*\}/)?(o=s.pre+"{"+s.body+be+s.post,Q(o)):[o];var u;if(l)u=s.body.split(/\.\./);else if(u=Ke(s.body),u.length===1&&(u=Q(u[0],!1).map(xt),u.length===1))return n.map(function(pt){return s.pre+u[0]+pt});var h;if(l){var m=xe(u[0]),f=xe(u[1]),w=Math.max(u[0].length,u[1].length),y=u.length==3?Math.abs(xe(u[2])):1,P=Tt,D=f<m;D&&(y*=-1,P=Rt);var $=u.some(bt);h=[];for(var A=m;P(A,f);A+=y){var R;if(d)R=String.fromCharCode(A),R==="\\"&&(R="");else if(R=String(A),$){var Le=w-R.length;if(Le>0){var Ie=new Array(Le+1).join("0");A<0?R="-"+Ie+R.slice(1):R=Ie+R}}h.push(R)}}else{h=[];for(var G=0;G<u.length;G++)h.push.apply(h,Q(u[G],!1))}for(var G=0;G<h.length;G++)for(var i=0;i<n.length;i++){var a=r+h[G]+n[i];(!e||l||a)&&t.push(a)}}return t}});var ys={};yt(ys,{activate:()=>hs,deactivate:()=>vs});module.exports=Dt(ys);var g=C(require("vscode"));var J=C(require("vscode"));var N=C(require("vscode"));var We=C(require("crypto"));function O(o){return We.createHash("md5").update(o).digest("hex")}function Oe(o,e){return`${O(o)}-${e}`}function je(o){let e=/\b[a-zA-Z_][a-zA-Z0-9_]*\b/g,t=o.match(e)||[],s=new Set(["function","const","let","var","class","interface","type","return","if","else","for","while","do","switch","case","break","continue","try","catch","finally","throw","import","export","from","default","async","await","new","this","super","extends","implements","static","public","private","protected","readonly","abstract","true","false","null","undefined","void","never","def","self","cls","lambda","pass","raise","with","as","func","struct","impl","trait","pub","mut","fn","mod","package","main","fmt","println","print"]);return t.filter(r=>!s.has(r.toLowerCase()))}function Z(o){return o.replace(/\s+/g," ").trim()}function Fe(o,e){let t=o.length,s=e.length,r=Array(t+1).fill(null).map(()=>Array(s+1).fill(0));for(let n=0;n<=t;n++)r[n][0]=n;for(let n=0;n<=s;n++)r[0][n]=n;for(let n=1;n<=t;n++)for(let i=1;i<=s;i++)o[n-1]===e[i-1]?r[n][i]=r[n-1][i-1]:r[n][i]=1+Math.min(r[n-1][i],r[n][i-1],r[n-1][i-1]);return r[t][s]}function De(o,e){if(e.length===0)return null;let t=e[0],s=Fe(o,t);for(let r=1;r<e.length;r++){let n=Fe(o,e[r]);n<s&&(s=n,t=e[r])}return{match:t,distance:s}}function Ne(o,e){let t=null;return(...s)=>{t&&clearTimeout(t),t=setTimeout(()=>o(...s),e)}}var k=class{parseDocumentation(e,t){switch(t){case"jsdoc":case"javadoc":return this.parseJSDocStyle(e);case"pydoc":return this.parsePyDocStyle(e);case"godoc":return this.parseGoDocStyle(e);case"rustdoc":return this.parseRustDocStyle(e);default:return this.parseGenericComment(e)}}parseJSDocStyle(e){let t={description:"",params:[],tags:[]},r=e.replace(/^\/\*\*?/gm,"").replace(/\*\/$/gm,"").replace(/^\s*\*\s?/gm,"").trim().split(`
-`),n=[];for(let i of r){let a=i.trim(),c=a.match(/@param\s+(?:\{([^}]*)\}\s+)?(\w+)\s*(.*)/);if(c){t.params.push({name:c[2],type:c[1],description:c[3]||"",isOptional:c[1]?.includes("=")||!1});continue}let d=a.match(/@returns?\s+(?:\{([^}]*)\}\s*)?(.*)/);if(d){t.returns={type:d[1],description:d[2]||""};continue}let l=a.match(/@(?:throws|exception)\s+(?:\{([^}]*)\}\s*)?(.*)/);if(l){t.throws||(t.throws=[]),t.throws.push({type:l[1],description:l[2]||""});continue}let p=a.match(/@deprecated\s*(.*)/);if(p){t.deprecated=p[1]||"Deprecated";continue}let u=a.match(/@since\s+(.*)/);if(u){t.since=u[1];continue}let h=a.match(/@example\s*(.*)/);if(h){t.examples||(t.examples=[]),t.examples.push(h[1]||"");continue}let m=a.match(/@(\w+)\s*(.*)/);if(m){t.tags.push({name:m[1],value:m[2]||""});continue}a.startsWith("@")||n.push(a)}return t.description=n.join(" ").trim(),t}parsePyDocStyle(e){let t={description:"",params:[],tags:[]},s=e.replace(/^['"`]{3}/gm,"").replace(/['"`]{3}$/gm,"").trim(),r=s.split(/\n\s*\n/);r.length>0&&(t.description=r[0].trim());let n=/(?:Args|Parameters|Params):\s*\n((?:\s+\w+.*\n?)+)/gi,i=s.match(n);if(i){let p=/^\s+(\w+)(?:\s*\(([^)]+)\))?:\s*(.*)$/gm,u;for(;(u=p.exec(i[0]))!==null;)t.params.push({name:u[1],type:u[2],description:u[3]||"",isOptional:!1})}let a=/Returns:\s*\n?\s*(?:(\w+):\s*)?(.+)/i,c=s.match(a);c&&(t.returns={type:c[1],description:c[2]||""});let d=/Raises:\s*\n((?:\s+\w+.*\n?)+)/gi,l=s.match(d);if(l){t.throws=[];let p=/^\s+(\w+):\s*(.*)$/gm,u;for(;(u=p.exec(l[0]))!==null;)t.throws.push({type:u[1],description:u[2]||""})}return t}parseGoDocStyle(e){let t={description:"",params:[],tags:[]},s=e.replace(/^\/\/\s?/gm,"").trim();t.description=s;let r=s.split(/\s+/);return t}parseRustDocStyle(e){let t={description:"",params:[],tags:[]},r=e.replace(/^\/\/[\/!]\s?/gm,"").trim().split(`
-`),n=[];for(let i of r){let a=i.trim();if(a==="# Arguments")continue;let c=a.match(/^\*\s+`(\w+)`\s*-\s*(.*)$/);if(c){t.params.push({name:c[1],description:c[2]||"",isOptional:!1});continue}if(a!=="# Returns"){if(a==="# Examples"){t.examples||(t.examples=[]);continue}n.push(a)}}return t.description=n.join(" ").trim(),t}parseGenericComment(e){return{description:e.replace(/^\/\*+/gm,"").replace(/\*+\/$/gm,"").replace(/^\/\/\s?/gm,"").replace(/^\s*\*\s?/gm,"").replace(/^#\s?/gm,"").trim(),params:[],tags:[]}}createPair(e,t,s,r,n,i,a){return{id:Oe(e,t.start.line),filePath:e,docRange:t,docContent:s,docType:r,codeRange:n,codeContent:i,codeSignature:a,driftScore:0,driftReasons:[],lastAnalyzed:new Date,isReviewed:!1}}createBasicSignature(e,t,s){return{name:e,type:t,parameters:[],modifiers:[],hash:O(s)}}};var te=class extends k{languageId="typescript";fileExtensions=[".ts",".tsx",".js",".jsx",".mjs",".cjs"];async parseDocCodePairs(e){let t=[],r=e.getText().split(`
-`),n=0;for(;n<r.length;){if(r[n].trim().startsWith("/**")){let a=n,c=n;for(;c<r.length&&!r[c].includes("*/");)c++;if(c<r.length){let l=r.slice(a,c+1).join(`
-`),p=new N.Range(new N.Position(a,0),new N.Position(c,r[c].length)),u=c+1;for(;u<r.length;){let h=r[u].trim();if(h===""||h.startsWith("@"))u++;else break}if(u<r.length){let h=this.findCodeBlock(r,u);if(h){let m=r.slice(u,h.end+1).join(`
-`),f=new N.Range(new N.Position(u,0),new N.Position(h.end,r[h.end]?.length||0)),w=this.extractCodeSignature(m,f);t.push(this.createPair(e.uri.fsPath,p,l,"jsdoc",f,m,w)),n=h.end}}}}n++}return t}findCodeBlock(e,t){let s=e[t].trim(),r="function";if(s.includes("class ")?r="class":s.includes("interface ")?r="interface":s.includes("type ")?r="type":s.match(/^(export\s+)?(const|let|var)\s+/)&&(r="variable"),!s.includes("{")&&(s.includes("=>")||s.includes("="))){let a=t;for(;a<e.length-1;){let c=e[a].trim();if(c.endsWith(";")||c.endsWith(",")||!c.endsWith("=>")&&!c.endsWith("(")&&!c.endsWith(","))break;a++}return{end:a,type:r}}let n=0,i=!1;for(let a=t;a<e.length;a++){let c=e[a];for(let d of c)d==="{"?(n++,i=!0):d==="}"&&n--;if(i&&n===0)return{end:a,type:r}}return i?null:{end:t,type:r}}extractCodeSignature(e,t){let s=e.split(`
-`)[0].trim(),r="unknown",n="function",i=[],a,c=[];s.includes("export ")&&c.push("export"),s.includes("default ")&&c.push("default"),s.includes("async ")&&c.push("async"),s.includes("static ")&&c.push("static"),s.includes("private ")&&c.push("private"),s.includes("protected ")&&c.push("protected"),s.includes("public ")&&c.push("public"),s.includes("readonly ")&&c.push("readonly");let d=s.match(/(?:function\s+)?(\w+)\s*(?:<[^>]*>)?\s*\(([^)]*)\)(?:\s*:\s*([^{=]+))?/);if(d){r=d[1],n=s.includes("class ")?"class":s.includes("interface ")?"interface":"function";let m=d[2];if(m){let f=this.parseParameters(m);i.push(...f)}d[3]&&(a=d[3].trim())}let l=s.match(/(?:const|let|var)\s+(\w+)(?:\s*:\s*[^=]+)?\s*=\s*(?:async\s+)?\(?([^)]*)\)?\s*(?::\s*([^=]+))?\s*=>/);if(l){r=l[1],n="function";let m=l[2];if(m){let f=this.parseParameters(m);i.push(...f)}l[3]&&(a=l[3].trim())}let p=s.match(/class\s+(\w+)/);p&&(r=p[1],n="class");let u=s.match(/interface\s+(\w+)/);u&&(r=u[1],n="interface");let h=s.match(/type\s+(\w+)/);return h&&(r=h[1],n="type"),{name:r,type:n,parameters:i,returnType:a,modifiers:c,hash:O(e)}}parseParameters(e){let t=[];if(!e.trim())return t;let s=0,r="",n=[];for(let i of e)i==="<"||i==="("||i==="["||i==="{"?(s++,r+=i):i===">"||i===")"||i==="]"||i==="}"?(s--,r+=i):i===","&&s===0?(n.push(r.trim()),r=""):r+=i;r.trim()&&n.push(r.trim());for(let i of n){let a=this.parseParameter(i);a&&t.push(a)}return t}parseParameter(e){let t=e.trim();if(!t)return null;let s=t.startsWith("..."),r=s?t.slice(3):t,n=r.match(/^(\w+)(\?)?(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?$/);if(n)return{name:n[1],type:n[3]?.trim(),defaultValue:n[4]?.trim(),isOptional:!!n[2]||!!n[4],isRest:s};let i=r.match(/^(\w+)$/);return i?{name:i[1],isOptional:!1,isRest:s}:null}};var z=C(require("vscode"));var re=class extends k{languageId="python";fileExtensions=[".py",".pyw",".pyi"];async parseDocCodePairs(e){let t=[],r=e.getText().split(`
-`),n=0;for(;n<r.length;){let a=r[n].trim();if(a.match(/^(async\s+)?def\s+(\w+)\s*\(|^class\s+(\w+)/)){let d=n,l=a.startsWith("class"),p=n;if(!l){let f=0,w=!1;for(let y=n;y<r.length;y++){let P=r[y];for(let D of P)D==="("?(f++,w=!0):D===")"&&f--;if(w&&f===0){p=y;break}}}let u=p+1;for(;u<r.length&&!r[u-1].trim().endsWith(":");)u++;for(;u<r.length&&r[u].trim()==="";)u++;let h=r[u]?.trim()||"",m=this.getDocstringQuote(h);if(m){let f=u;if(h.endsWith(m)&&h.length>m.length*2)f=u;else for(f=u+1;f<r.length&&!r[f].trim().endsWith(m);)f++;let y=r.slice(u,f+1).join(`
-`),P=new z.Range(new z.Position(u,0),new z.Position(f,r[f]?.length||0)),D=this.findBlockEnd(r,d),$=r.slice(d,D+1).join(`
-`),A=new z.Range(new z.Position(d,0),new z.Position(D,r[D]?.length||0)),R=this.extractCodeSignature($,A);t.push(this.createPair(e.uri.fsPath,P,y,"pydoc",A,$,R)),n=D}}n++}return t}getDocstringQuote(e){return e.startsWith('"""')?'"""':e.startsWith("'''")?"'''":e.startsWith('"')?'"':e.startsWith("'")?"'":null}findBlockEnd(e,t){let s=this.getIndentation(e[t]),r=t;for(let n=t+1;n<e.length;n++){let i=e[n],a=i.trim();if(a===""||a.startsWith("#"))continue;if(this.getIndentation(i)<=s&&a!=="")break;r=n}return r}getIndentation(e){let t=0;for(let s of e)if(s===" ")t++;else if(s==="	")t+=4;else break;return t}extractCodeSignature(e,t){let s=e.split(`
-`),r=s[0].trim(),n="unknown",i="function",a=[],c,d=[];r.startsWith("async ")&&d.push("async");let l=r.match(/^class\s+(\w+)/);if(l)return n=l[1],i="class",{name:n,type:i,parameters:a,returnType:c,modifiers:d,hash:O(e)};let u=this.extractFullSignature(s).match(/(?:async\s+)?def\s+(\w+)\s*\(([^)]*)\)(?:\s*->\s*([^:]+))?/s);if(u){n=u[1],i="function",n.startsWith("__")&&n.endsWith("__")&&d.push("dunder"),n.startsWith("_")&&!n.startsWith("__")&&d.push("private");let h=u[2];if(h){let m=this.parseParameters(h);a.push(...m)}u[3]&&(c=u[3].trim())}return{name:n,type:i,parameters:a,returnType:c,modifiers:d,hash:O(e)}}extractFullSignature(e){let t="",s=0,r=!1;for(let n of e){t+=n+`
-`;for(let i of n)i==="("?(s++,r=!0):i===")"&&s--;if(r&&s===0&&(n.includes("->")||n.includes(":")))break}return t}parseParameters(e){let t=[];if(!e.trim())return t;let s=0,r="",n=[];for(let i of e)i==="["||i==="("||i==="{"?(s++,r+=i):i==="]"||i===")"||i==="}"?(s--,r+=i):i===","&&s===0?(n.push(r.trim()),r=""):r+=i;r.trim()&&n.push(r.trim());for(let i of n){let a=this.parseParameter(i);a&&t.push(a)}return t}parseParameter(e){let t=e.trim();if(!t)return null;let s=t==="self"||t==="cls",r=t.startsWith("*")&&!t.startsWith("**"),n=t.startsWith("**");if(r||n){let c=t.replace(/^\*+/,"").match(/^(\w+)(?:\s*:\s*(.+))?$/);if(c)return{name:c[1],type:c[2]?.trim(),isOptional:!0,isRest:r||n}}let i=t.match(/^(\w+)(?:\s*:\s*([^=]+))?(?:\s*=\s*(.+))?$/);return i?{name:i[1],type:i[2]?.trim(),defaultValue:i[3]?.trim(),isOptional:!!i[3]||s,isRest:!1}:null}};var Pe=C(require("vscode"));var ne=class extends k{languageId="go";fileExtensions=[".go"];async parseDocCodePairs(e){let t=[],r=e.getText().split(`
-`),n=/^func\s+(\w+)\s*\((.*?)\)/,i=/^\s*\/\/\s?(.*)$/,a=[],c=-1;for(let d=0;d<r.length;d++){let l=r[d],p=l.trim();if(p.match(i)){a.length===0&&(c=d),a.push(l);continue}let h=p.match(n);if(h&&a.length>0){let m=h[1],f=h[2],w=a.join(`
-`),y=new Pe.Range(c,0,d-1,r[d-1].length),P=new Pe.Range(d,0,d,l.length),D=this.extractCodeSignature(l,P);t.push(this.createPair(e.uri.fsPath,y,w,"godoc",P,l,D))}a.length>0&&(a=[],c=-1)}return t}extractCodeSignature(e,t){let s={name:"",type:"function",parameters:[],modifiers:[],hash:""},r=e.trim().match(/^func\s+(\w+)\s*\((.*?)\)(?:\s*(.*))?\s*\{?$/);if(r){s.name=r[1];let n=r[2];if(n){let i=n.split(","),a=[];s.parameters=this.parseGoParams(n)}if(r[3]){let i=r[3].replace("{","").trim();i&&(s.returnType=i)}}return s}parseGoParams(e){let t=[],s=e.split(","),r=[];for(let n of s){let i=n.trim(),a=i.lastIndexOf(" ");if(a!==-1){let c=i.substring(0,a).trim(),d=i.substring(a+1).trim();r.push(c);for(let l of r)t.push({name:l,type:d});r=[]}else r.push(i)}return t}};var Ce=C(require("vscode"));var ie=class extends k{languageId="rust";fileExtensions=[".rs"];async parseDocCodePairs(e){let t=[],r=e.getText().split(`
-`),n=/^(?:pub(?:\([^)]+\))?\s+)?(?:unsafe\s+|async\s+|const\s+|extern\s+(?:\"[^\"]+\"\s+)?)*fn\s+(\w+)/,i=/^\s*\/\/(?:\/|!)\s?(.*)$/,a=[],c=-1;for(let d=0;d<r.length;d++){let l=r[d],p=l.trim();if(p.startsWith("#[")&&p.endsWith("]")&&a.length>0)continue;if(p.match(i)){a.length===0&&(c=d),a.push(l);continue}if(p.match(n)&&a.length>0){let m=a.join(`
-`),f=c+a.length-1,w=new Ce.Range(c,0,f,r[f].length),y=new Ce.Range(d,0,d,l.length),P=this.extractCodeSignature(l,y);t.push(this.createPair(e.uri.fsPath,w,m,"rustdoc",y,l,P))}a.length>0&&(a=[],c=-1)}return t}extractCodeSignature(e,t){let s={name:"",type:"function",parameters:[],modifiers:[],hash:""},r=e.match(/fn\s+(\w+)/);r&&(s.name=r[1]),e.match(/\bpub\b/)&&s.modifiers.push("public"),e.match(/\basync\b/)&&s.modifiers.push("async"),e.match(/\bunsafe\b/)&&s.modifiers.push("unsafe");let n=e.match(/\((.*?)\)/);if(n&&n[1]){let a=n[1].split(",");for(let c of a){let d=c.trim();if(!d)continue;let l=d.indexOf(":");l!==-1?s.parameters.push({name:d.substring(0,l).trim(),type:d.substring(l+1).trim(),isOptional:!1,isRest:!1}):(d==="self"||d==="&self"||d==="&mut self")&&s.parameters.push({name:"self",type:d,isOptional:!1,isRest:!1})}}let i=e.match(/->\s*(.*?)\s*\{?$/);return i&&(s.returnType=i[1].trim()),s}};var Se=C(require("vscode"));var oe=class extends k{languageId="java";fileExtensions=[".java"];async parseDocCodePairs(e){let t=[],r=e.getText().split(`
-`),n=!1,i=-1,a=[],c=/^(?:[\w\[\]<>\.]+\s+)*[\w\[\]<>\.]+\s+(\w+)\s*\(/;for(let d=0;d<r.length;d++){let l=r[d],p=l.trim();if(!n&&p.startsWith("/**")){n=!0,i=d,a=[l],p.endsWith("*/")&&(n=!1);continue}if(n){a.push(l),p.endsWith("*/")&&(n=!1);continue}if(a.length>0){if(p===""||p.startsWith("@"))continue;let u=p.match(c),h=/\bclass\b/.test(p);if(u&&!h){let m=a.join(`
-`),f=d-1,w=i+a.length-1,y=new Se.Range(i,0,w,r[w].length),P=new Se.Range(d,0,d,l.length),D=this.extractCodeSignature(l,P);t.push(this.createPair(e.uri.fsPath,y,m,"javadoc",P,l,D)),a=[],i=-1}else(p.endsWith("{")||p.endsWith(";"))&&(a=[],i=-1)}}return t}extractCodeSignature(e,t){let s={name:"",type:"function",parameters:[],modifiers:[],hash:""},r=["public","private","protected","static","final","abstract","synchronized"];for(let a of r)e.includes(a+" ")&&s.modifiers.push(a);let n=e,i=e.match(/(\w+)\s*\((.*?)\)/);if(i){s.name=i[1];let c=e.substring(0,e.indexOf(i[1])).trim().split(/\s+/),d=c[c.length-1];d&&!r.includes(d)&&!d.startsWith("@")&&(s.returnType=d);let l=i[2];if(l){let p=l.split(",");for(let u of p){let h=u.trim();if(!h)continue;let m=h.split(/\s+/);if(m.length>=2){let f=m[m.length-1],w=m.slice(0,m.length-1).join(" ");s.parameters.push({name:f,type:w,isOptional:!1,isRest:!1})}}}}return s}};var ze=C(require("vscode")),S=class{static outputChannel;static initialize(e){this.outputChannel=ze.window.createOutputChannel(e)}static log(e){if(this.outputChannel){let t=new Date().toISOString();this.outputChannel.appendLine(`[${t}] ${e}`)}}static error(e,t){if(this.outputChannel){let s=new Date().toISOString();this.outputChannel.appendLine(`[${s}] [ERROR] ${e}`),t&&this.outputChannel.appendLine(t instanceof Error?t.stack||t.message:String(t))}}static dispose(){this.outputChannel&&this.outputChannel.dispose()}};var ae=class o{static instance;parsers=new Map;extensionMap=new Map;constructor(){this.registerDefaultParsers()}static getInstance(){return o.instance||(o.instance=new o),o.instance}registerDefaultParsers(){let e=new te;this.registerParser(e),this.parsers.set("javascript",e),this.parsers.set("javascriptreact",e),this.parsers.set("typescriptreact",e);let t=new re;this.registerParser(t);let s=new ne;this.registerParser(s);let r=new ie;this.registerParser(r);let n=new oe;this.registerParser(n)}registerParser(e){this.parsers.set(e.languageId,e);for(let t of e.fileExtensions)this.extensionMap.set(t,e.languageId)}getParser(e){let t=this.parsers.get(e.languageId);if(!t){let s=this.getFileExtension(e.uri.fsPath),r=this.extensionMap.get(s);r&&(t=this.parsers.get(r))}return t}getParserByLanguageId(e){return this.parsers.get(e)}isLanguageSupported(e){return this.parsers.has(e)}getSupportedLanguages(){return Array.from(this.parsers.keys())}async parseDocument(e){let t=this.getParser(e);if(!t)return[];try{return await t.parseDocCodePairs(e)}catch(s){return S.error(`Error parsing document ${e.uri.fsPath}:`,s),[]}}getFileExtension(e){let t=e.lastIndexOf(".");return t===-1?"":e.slice(t).toLowerCase()}};var ce=class{paramMismatchWeight=.4;returnTypeMismatchWeight=.2;signatureChangeWeight=.25;descriptionMismatchWeight=.15;analyzePair(e,t){let s=[],r=t.parseDocumentation(e.docContent,e.docType),n=this.analyzeParameters(r,e.codeSignature);s.push(...n);let i=this.analyzeReturnType(r,e.codeSignature);s.push(...i);let a=this.analyzeDescription(r,e.codeContent,e.codeSignature);s.push(...a);let c=this.calculateDriftScore(s);return{...e,driftScore:c,driftReasons:s,lastAnalyzed:new Date}}analyzeParameters(e,t){let s=[],r=e.params.map(i=>i.name.toLowerCase()),n=t.parameters.filter(i=>!["self","cls"].includes(i.name.toLowerCase())).map(i=>i.name.toLowerCase());for(let i of e.params){let a=i.name.toLowerCase();if(!["self","cls"].includes(a)&&!n.includes(a)){let c=De(a,n);c&&c.distance<=2?s.push({type:"parameter_renamed",severity:"medium",message:`Parameter '${i.name}' may have been renamed to '${c.match}'`,details:`Documentation mentions '${i.name}' but code has '${c.match}'`}):s.push({type:"parameter_removed",severity:"high",message:`Documented parameter '${i.name}' not found in code`,details:"The documentation describes a parameter that doesn't exist in the current function signature"})}}for(let i of t.parameters){let a=i.name.toLowerCase();["self","cls"].includes(a)||r.includes(a)||i.name.length>1&&s.push({type:"parameter_added",severity:"medium",message:`Parameter '${i.name}' is not documented`,details:`The code has a parameter '${i.name}' that isn't described in the documentation`})}for(let i of e.params){let a=t.parameters.find(c=>c.name.toLowerCase()===i.name.toLowerCase());if(a&&i.type&&a.type){let c=Z(i.type.toLowerCase()),d=Z(a.type.toLowerCase());this.typesMatch(c,d)||s.push({type:"parameter_mismatch",severity:"medium",message:`Type mismatch for parameter '${i.name}'`,details:`Documentation says '${i.type}' but code has '${a.type}'`})}}return s}analyzeReturnType(e,t){let s=[];if(e.returns&&t.returnType){let r=Z(e.returns.type?.toLowerCase()||""),n=Z(t.returnType.toLowerCase());r&&!this.typesMatch(r,n)&&s.push({type:"return_type_mismatch",severity:"medium",message:"Return type mismatch",details:`Documentation says '${e.returns.type}' but code returns '${t.returnType}'`})}return e.returns&&!t.returnType&&e.returns.type&&!["void","none","undefined"].includes(e.returns.type.toLowerCase())&&s.push({type:"return_type_mismatch",severity:"low",message:"Documentation specifies return type but code has none",details:`Documentation mentions returning '${e.returns.type}' but no return type in signature`}),s}analyzeDescription(e,t,s){let r=[],n=new Set(je(t).map(a=>a.toLowerCase())),i=this.extractDescriptionReferences(e.description);for(let a of i){let c=a.toLowerCase();if(!(a.length<=2)&&!n.has(c)){let d=De(c,Array.from(n));d&&d.distance<=2&&d.distance>0&&r.push({type:"description_mismatch",severity:"low",message:`Description references '${a}' which may have been renamed to '${d.match}'`,details:"Consider updating the documentation to use the current name"})}}return r}extractDescriptionReferences(e){let t=[],s=e.match(/`([a-zA-Z_][a-zA-Z0-9_]*)`/g);s&&t.push(...s.map(a=>a.slice(1,-1)));let r=/\b([a-z][a-zA-Z0-9]*[A-Z][a-zA-Z0-9]*)\b/g,n=/\b([a-z][a-z0-9]*_[a-z][a-z0-9_]*)\b/g,i;for(;(i=r.exec(e))!==null;)t.push(i[1]);for(;(i=n.exec(e))!==null;)t.push(i[1]);return[...new Set(t)]}typesMatch(e,t){if(e===t)return!0;let s={string:["str","string"],number:["int","float","number","integer"],boolean:["bool","boolean"],array:["list","array","[]"],object:["dict","object","map","record"],any:["any","object","unknown"],void:["void","none","null","undefined"]};for(let r of Object.values(s))if(r.includes(e)&&r.includes(t))return!0;return!!(e.includes(t)||t.includes(e))}calculateDriftScore(e){if(e.length===0)return 0;let t=0;for(let s of e){let r=0;switch(s.type){case"parameter_mismatch":case"parameter_added":case"parameter_removed":case"parameter_renamed":r=this.paramMismatchWeight;break;case"return_type_mismatch":r=this.returnTypeMismatchWeight;break;case"signature_changed":case"code_content_changed":r=this.signatureChangeWeight;break;case"description_mismatch":r=this.descriptionMismatchWeight;break;default:r=.1}switch(s.severity){case"critical":r*=1.5;break;case"high":r*=1.2;break;case"medium":r*=1;break;case"low":r*=.5;break}t+=r}return Math.min(1,t)}compareSignatures(e,t){let s=[];return e.hash!==t.hash&&s.push({type:"code_content_changed",severity:"medium",message:"Code content has changed since documentation was last reviewed",details:"The implementation may have been updated without reviewing the documentation"}),e.name!==t.name&&s.push({type:"signature_changed",severity:"high",message:`Function renamed from '${e.name}' to '${t.name}'`,details:"The function name has changed"}),e.parameters.length!==t.parameters.length&&s.push({type:"signature_changed",severity:"high",message:"Parameter count has changed",details:`Was ${e.parameters.length} parameters, now ${t.parameters.length}`}),s}};var ct=C(et(),1);var X=o=>{if(typeof o!="string")throw new TypeError("invalid pattern");if(o.length>65536)throw new TypeError("pattern is too long")};var Mt={"[:alnum:]":["\\p{L}\\p{Nl}\\p{Nd}",!0],"[:alpha:]":["\\p{L}\\p{Nl}",!0],"[:ascii:]":["\\x00-\\x7f",!1],"[:blank:]":["\\p{Zs}\\t",!0],"[:cntrl:]":["\\p{Cc}",!0],"[:digit:]":["\\p{Nd}",!0],"[:graph:]":["\\p{Z}\\p{C}",!0,!0],"[:lower:]":["\\p{Ll}",!0],"[:print:]":["\\p{C}",!0],"[:punct:]":["\\p{P}",!0],"[:space:]":["\\p{Z}\\t\\r\\n\\v\\f",!0],"[:upper:]":["\\p{Lu}",!0],"[:word:]":["\\p{L}\\p{Nl}\\p{Nd}\\p{Pc}",!0],"[:xdigit:]":["A-Fa-f0-9",!1]},K=o=>o.replace(/[[\]\\-]/g,"\\$&"),Et=o=>o.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&"),tt=o=>o.join(""),st=(o,e)=>{let t=e;if(o.charAt(t)!=="[")throw new Error("not in a brace expression");let s=[],r=[],n=t+1,i=!1,a=!1,c=!1,d=!1,l=t,p="";e:for(;n<o.length;){let f=o.charAt(n);if((f==="!"||f==="^")&&n===t+1){d=!0,n++;continue}if(f==="]"&&i&&!c){l=n+1;break}if(i=!0,f==="\\"&&!c){c=!0,n++;continue}if(f==="["&&!c){for(let[w,[y,P,D]]of Object.entries(Mt))if(o.startsWith(w,n)){if(p)return["$.",!1,o.length-t,!0];n+=w.length,D?r.push(y):s.push(y),a=a||P;continue e}}if(c=!1,p){f>p?s.push(K(p)+"-"+K(f)):f===p&&s.push(K(f)),p="",n++;continue}if(o.startsWith("-]",n+1)){s.push(K(f+"-")),n+=2;continue}if(o.startsWith("-",n+1)){p=f,n+=2;continue}s.push(K(f)),n++}if(l<n)return["",!1,0,!1];if(!s.length&&!r.length)return["$.",!1,o.length-t,!0];if(r.length===0&&s.length===1&&/^\\?.$/.test(s[0])&&!d){let f=s[0].length===2?s[0].slice(-1):s[0];return[Et(f),!1,l-t,!1]}let u="["+(d?"^":"")+tt(s)+"]",h="["+(d?"":"^")+tt(r)+"]";return[s.length&&r.length?"("+u+"|"+h+")":s.length?u:h,a,l-t,!0]};var _=(o,{windowsPathsNoEscape:e=!1}={})=>e?o.replace(/\[([^\/\\])\]/g,"$1"):o.replace(/((?!\\).|^)\[([^\/\\])\]/g,"$1$2").replace(/\\([^\/])/g,"$1");var kt=new Set(["!","?","+","*","@"]),rt=o=>kt.has(o),Lt="(?!(?:^|/)\\.\\.?(?:$|/))",de="(?!\\.)",It=new Set(["[","."]),$t=new Set(["..","."]),At=new Set("().*{}+?[]^$\\!"),Ft=o=>o.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&"),Te="[^/]",nt=Te+"*?",it=Te+"+?",H=class o{type;#s;#r;#i=!1;#e=[];#t;#o;#c;#a=!1;#n;#d;#u=!1;constructor(e,t,s={}){this.type=e,e&&(this.#r=!0),this.#t=t,this.#s=this.#t?this.#t.#s:this,this.#n=this.#s===this?s:this.#s.#n,this.#c=this.#s===this?[]:this.#s.#c,e==="!"&&!this.#s.#a&&this.#c.push(this),this.#o=this.#t?this.#t.#e.length:0}get hasMagic(){if(this.#r!==void 0)return this.#r;for(let e of this.#e)if(typeof e!="string"&&(e.type||e.hasMagic))return this.#r=!0;return this.#r}toString(){return this.#d!==void 0?this.#d:this.type?this.#d=this.type+"("+this.#e.map(e=>String(e)).join("|")+")":this.#d=this.#e.map(e=>String(e)).join("")}#p(){if(this!==this.#s)throw new Error("should only call on root");if(this.#a)return this;this.toString(),this.#a=!0;let e;for(;e=this.#c.pop();){if(e.type!=="!")continue;let t=e,s=t.#t;for(;s;){for(let r=t.#o+1;!s.type&&r<s.#e.length;r++)for(let n of e.#e){if(typeof n=="string")throw new Error("string part in extglob AST??");n.copyIn(s.#e[r])}t=s,s=t.#t}}return this}push(...e){for(let t of e)if(t!==""){if(typeof t!="string"&&!(t instanceof o&&t.#t===this))throw new Error("invalid part: "+t);this.#e.push(t)}}toJSON(){let e=this.type===null?this.#e.slice().map(t=>typeof t=="string"?t:t.toJSON()):[this.type,...this.#e.map(t=>t.toJSON())];return this.isStart()&&!this.type&&e.unshift([]),this.isEnd()&&(this===this.#s||this.#s.#a&&this.#t?.type==="!")&&e.push({}),e}isStart(){if(this.#s===this)return!0;if(!this.#t?.isStart())return!1;if(this.#o===0)return!0;let e=this.#t;for(let t=0;t<this.#o;t++){let s=e.#e[t];if(!(s instanceof o&&s.type==="!"))return!1}return!0}isEnd(){if(this.#s===this||this.#t?.type==="!")return!0;if(!this.#t?.isEnd())return!1;if(!this.type)return this.#t?.isEnd();let e=this.#t?this.#t.#e.length:0;return this.#o===e-1}copyIn(e){typeof e=="string"?this.push(e):this.push(e.clone(this))}clone(e){let t=new o(this.type,e);for(let s of this.#e)t.copyIn(s);return t}static#l(e,t,s,r){let n=!1,i=!1,a=-1,c=!1;if(t.type===null){let h=s,m="";for(;h<e.length;){let f=e.charAt(h++);if(n||f==="\\"){n=!n,m+=f;continue}if(i){h===a+1?(f==="^"||f==="!")&&(c=!0):f==="]"&&!(h===a+2&&c)&&(i=!1),m+=f;continue}else if(f==="["){i=!0,a=h,c=!1,m+=f;continue}if(!r.noext&&rt(f)&&e.charAt(h)==="("){t.push(m),m="";let w=new o(f,t);h=o.#l(e,w,h,r),t.push(w);continue}m+=f}return t.push(m),h}let d=s+1,l=new o(null,t),p=[],u="";for(;d<e.length;){let h=e.charAt(d++);if(n||h==="\\"){n=!n,u+=h;continue}if(i){d===a+1?(h==="^"||h==="!")&&(c=!0):h==="]"&&!(d===a+2&&c)&&(i=!1),u+=h;continue}else if(h==="["){i=!0,a=d,c=!1,u+=h;continue}if(rt(h)&&e.charAt(d)==="("){l.push(u),u="";let m=new o(h,l);l.push(m),d=o.#l(e,m,d,r);continue}if(h==="|"){l.push(u),u="",p.push(l),l=new o(null,t);continue}if(h===")")return u===""&&t.#e.length===0&&(t.#u=!0),l.push(u),u="",t.push(...p,l),d;u+=h}return t.type=null,t.#r=void 0,t.#e=[e.substring(s-1)],d}static fromGlob(e,t={}){let s=new o(null,void 0,t);return o.#l(e,s,0,t),s}toMMPattern(){if(this!==this.#s)return this.#s.toMMPattern();let e=this.toString(),[t,s,r,n]=this.toRegExpSource();if(!(r||this.#r||this.#n.nocase&&!this.#n.nocaseMagicOnly&&e.toUpperCase()!==e.toLowerCase()))return s;let a=(this.#n.nocase?"i":"")+(n?"u":"");return Object.assign(new RegExp(`^${t}$`,a),{_src:t,_glob:e})}get options(){return this.#n}toRegExpSource(e){let t=e??!!this.#n.dot;if(this.#s===this&&this.#p(),!this.type){let c=this.isStart()&&this.isEnd(),d=this.#e.map(h=>{let[m,f,w,y]=typeof h=="string"?o.#f(h,this.#r,c):h.toRegExpSource(e);return this.#r=this.#r||w,this.#i=this.#i||y,m}).join(""),l="";if(this.isStart()&&typeof this.#e[0]=="string"&&!(this.#e.length===1&&$t.has(this.#e[0]))){let m=It,f=t&&m.has(d.charAt(0))||d.startsWith("\\.")&&m.has(d.charAt(2))||d.startsWith("\\.\\.")&&m.has(d.charAt(4)),w=!t&&!e&&m.has(d.charAt(0));l=f?Lt:w?de:""}let p="";return this.isEnd()&&this.#s.#a&&this.#t?.type==="!"&&(p="(?:$|\\/)"),[l+d+p,_(d),this.#r=!!this.#r,this.#i]}let s=this.type==="*"||this.type==="+",r=this.type==="!"?"(?:(?!(?:":"(?:",n=this.#h(t);if(this.isStart()&&this.isEnd()&&!n&&this.type!=="!"){let c=this.toString();return this.#e=[c],this.type=null,this.#r=void 0,[c,_(this.toString()),!1,!1]}let i=!s||e||t||!de?"":this.#h(!0);i===n&&(i=""),i&&(n=`(?:${n})(?:${i})*?`);let a="";if(this.type==="!"&&this.#u)a=(this.isStart()&&!t?de:"")+it;else{let c=this.type==="!"?"))"+(this.isStart()&&!t&&!e?de:"")+nt+")":this.type==="@"?")":this.type==="?"?")?":this.type==="+"&&i?")":this.type==="*"&&i?")?":`)${this.type}`;a=r+n+c}return[a,_(n),this.#r=!!this.#r,this.#i]}#h(e){return this.#e.map(t=>{if(typeof t=="string")throw new Error("string type in extglob ast??");let[s,r,n,i]=t.toRegExpSource(e);return this.#i=this.#i||i,s}).filter(t=>!(this.isStart()&&this.isEnd())||!!t).join("|")}static#f(e,t,s=!1){let r=!1,n="",i=!1;for(let a=0;a<e.length;a++){let c=e.charAt(a);if(r){r=!1,n+=(At.has(c)?"\\":"")+c;continue}if(c==="\\"){a===e.length-1?n+="\\\\":r=!0;continue}if(c==="["){let[d,l,p,u]=st(e,a);if(p){n+=d,i=i||l,a+=p-1,t=t||u;continue}}if(c==="*"){s&&e==="*"?n+=it:n+=nt,t=!0;continue}if(c==="?"){n+=Te,t=!0;continue}n+=Ft(c)}return[n,_(e),!!t,i]}};var Re=(o,{windowsPathsNoEscape:e=!1}={})=>e?o.replace(/[?*()[\]]/g,"[$&]"):o.replace(/[?*()[\]\\]/g,"\\$&");var x=(o,e,t={})=>(X(e),!t.nocomment&&e.charAt(0)==="#"?!1:new U(e,t).match(o)),Wt=/^\*+([^+@!?\*\[\(]*)$/,Ot=o=>e=>!e.startsWith(".")&&e.endsWith(o),jt=o=>e=>e.endsWith(o),Nt=o=>(o=o.toLowerCase(),e=>!e.startsWith(".")&&e.toLowerCase().endsWith(o)),zt=o=>(o=o.toLowerCase(),e=>e.toLowerCase().endsWith(o)),_t=/^\*+\.\*+$/,Gt=o=>!o.startsWith(".")&&o.includes("."),Bt=o=>o!=="."&&o!==".."&&o.includes("."),Ht=/^\.\*+$/,Ut=o=>o!=="."&&o!==".."&&o.startsWith("."),Jt=/^\*+$/,Vt=o=>o.length!==0&&!o.startsWith("."),Zt=o=>o.length!==0&&o!=="."&&o!=="..",qt=/^\?+([^+@!?\*\[\(]*)?$/,Qt=([o,e=""])=>{let t=dt([o]);return e?(e=e.toLowerCase(),s=>t(s)&&s.toLowerCase().endsWith(e)):t},Xt=([o,e=""])=>{let t=lt([o]);return e?(e=e.toLowerCase(),s=>t(s)&&s.toLowerCase().endsWith(e)):t},Kt=([o,e=""])=>{let t=lt([o]);return e?s=>t(s)&&s.endsWith(e):t},Yt=([o,e=""])=>{let t=dt([o]);return e?s=>t(s)&&s.endsWith(e):t},dt=([o])=>{let e=o.length;return t=>t.length===e&&!t.startsWith(".")},lt=([o])=>{let e=o.length;return t=>t.length===e&&t!=="."&&t!==".."},ut=typeof process=="object"&&process?typeof process.env=="object"&&process.env&&process.env.__MINIMATCH_TESTING_PLATFORM__||process.platform:"posix",ot={win32:{sep:"\\"},posix:{sep:"/"}},es=ut==="win32"?ot.win32.sep:ot.posix.sep;x.sep=es;var I=Symbol("globstar **");x.GLOBSTAR=I;var ts="[^/]",ss=ts+"*?",rs="(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?",ns="(?:(?!(?:\\/|^)\\.).)*?",is=(o,e={})=>t=>x(t,o,e);x.filter=is;var L=(o,e={})=>Object.assign({},o,e),os=o=>{if(!o||typeof o!="object"||!Object.keys(o).length)return x;let e=x;return Object.assign((s,r,n={})=>e(s,r,L(o,n)),{Minimatch:class extends e.Minimatch{constructor(r,n={}){super(r,L(o,n))}static defaults(r){return e.defaults(L(o,r)).Minimatch}},AST:class extends e.AST{constructor(r,n,i={}){super(r,n,L(o,i))}static fromGlob(r,n={}){return e.AST.fromGlob(r,L(o,n))}},unescape:(s,r={})=>e.unescape(s,L(o,r)),escape:(s,r={})=>e.escape(s,L(o,r)),filter:(s,r={})=>e.filter(s,L(o,r)),defaults:s=>e.defaults(L(o,s)),makeRe:(s,r={})=>e.makeRe(s,L(o,r)),braceExpand:(s,r={})=>e.braceExpand(s,L(o,r)),match:(s,r,n={})=>e.match(s,r,L(o,n)),sep:e.sep,GLOBSTAR:I})};x.defaults=os;var ht=(o,e={})=>(X(o),e.nobrace||!/\{(?:(?!\{).)*\}/.test(o)?[o]:(0,ct.default)(o));x.braceExpand=ht;var as=(o,e={})=>new U(o,e).makeRe();x.makeRe=as;var cs=(o,e,t={})=>{let s=new U(e,t);return o=o.filter(r=>s.match(r)),s.options.nonull&&!o.length&&o.push(e),o};x.match=cs;var at=/[?*]|[+@!]\(.*?\)|\[|\]/,ds=o=>o.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&"),U=class{options;set;pattern;windowsPathsNoEscape;nonegate;negate;comment;empty;preserveMultipleSlashes;partial;globSet;globParts;nocase;isWindows;platform;windowsNoMagicRoot;regexp;constructor(e,t={}){X(e),t=t||{},this.options=t,this.pattern=e,this.platform=t.platform||ut,this.isWindows=this.platform==="win32",this.windowsPathsNoEscape=!!t.windowsPathsNoEscape||t.allowWindowsEscape===!1,this.windowsPathsNoEscape&&(this.pattern=this.pattern.replace(/\\/g,"/")),this.preserveMultipleSlashes=!!t.preserveMultipleSlashes,this.regexp=null,this.negate=!1,this.nonegate=!!t.nonegate,this.comment=!1,this.empty=!1,this.partial=!!t.partial,this.nocase=!!this.options.nocase,this.windowsNoMagicRoot=t.windowsNoMagicRoot!==void 0?t.windowsNoMagicRoot:!!(this.isWindows&&this.nocase),this.globSet=[],this.globParts=[],this.set=[],this.make()}hasMagic(){if(this.options.magicalBraces&&this.set.length>1)return!0;for(let e of this.set)for(let t of e)if(typeof t!="string")return!0;return!1}debug(...e){}make(){let e=this.pattern,t=this.options;if(!t.nocomment&&e.charAt(0)==="#"){this.comment=!0;return}if(!e){this.empty=!0;return}this.parseNegate(),this.globSet=[...new Set(this.braceExpand())],t.debug&&(this.debug=(...n)=>console.error(...n)),this.debug(this.pattern,this.globSet);let s=this.globSet.map(n=>this.slashSplit(n));this.globParts=this.preprocess(s),this.debug(this.pattern,this.globParts);let r=this.globParts.map((n,i,a)=>{if(this.isWindows&&this.windowsNoMagicRoot){let c=n[0]===""&&n[1]===""&&(n[2]==="?"||!at.test(n[2]))&&!at.test(n[3]),d=/^[a-z]:/i.test(n[0]);if(c)return[...n.slice(0,4),...n.slice(4).map(l=>this.parse(l))];if(d)return[n[0],...n.slice(1).map(l=>this.parse(l))]}return n.map(c=>this.parse(c))});if(this.debug(this.pattern,r),this.set=r.filter(n=>n.indexOf(!1)===-1),this.isWindows)for(let n=0;n<this.set.length;n++){let i=this.set[n];i[0]===""&&i[1]===""&&this.globParts[n][2]==="?"&&typeof i[3]=="string"&&/^[a-z]:$/i.test(i[3])&&(i[2]="?")}this.debug(this.pattern,this.set)}preprocess(e){if(this.options.noglobstar)for(let s=0;s<e.length;s++)for(let r=0;r<e[s].length;r++)e[s][r]==="**"&&(e[s][r]="*");let{optimizationLevel:t=1}=this.options;return t>=2?(e=this.firstPhasePreProcess(e),e=this.secondPhasePreProcess(e)):t>=1?e=this.levelOneOptimize(e):e=this.adjascentGlobstarOptimize(e),e}adjascentGlobstarOptimize(e){return e.map(t=>{let s=-1;for(;(s=t.indexOf("**",s+1))!==-1;){let r=s;for(;t[r+1]==="**";)r++;r!==s&&t.splice(s,r-s)}return t})}levelOneOptimize(e){return e.map(t=>(t=t.reduce((s,r)=>{let n=s[s.length-1];return r==="**"&&n==="**"?s:r===".."&&n&&n!==".."&&n!=="."&&n!=="**"?(s.pop(),s):(s.push(r),s)},[]),t.length===0?[""]:t))}levelTwoFileOptimize(e){Array.isArray(e)||(e=this.slashSplit(e));let t=!1;do{if(t=!1,!this.preserveMultipleSlashes){for(let r=1;r<e.length-1;r++){let n=e[r];r===1&&n===""&&e[0]===""||(n==="."||n==="")&&(t=!0,e.splice(r,1),r--)}e[0]==="."&&e.length===2&&(e[1]==="."||e[1]==="")&&(t=!0,e.pop())}let s=0;for(;(s=e.indexOf("..",s+1))!==-1;){let r=e[s-1];r&&r!=="."&&r!==".."&&r!=="**"&&(t=!0,e.splice(s-1,2),s-=2)}}while(t);return e.length===0?[""]:e}firstPhasePreProcess(e){let t=!1;do{t=!1;for(let s of e){let r=-1;for(;(r=s.indexOf("**",r+1))!==-1;){let i=r;for(;s[i+1]==="**";)i++;i>r&&s.splice(r+1,i-r);let a=s[r+1],c=s[r+2],d=s[r+3];if(a!==".."||!c||c==="."||c===".."||!d||d==="."||d==="..")continue;t=!0,s.splice(r,1);let l=s.slice(0);l[r]="**",e.push(l),r--}if(!this.preserveMultipleSlashes){for(let i=1;i<s.length-1;i++){let a=s[i];i===1&&a===""&&s[0]===""||(a==="."||a==="")&&(t=!0,s.splice(i,1),i--)}s[0]==="."&&s.length===2&&(s[1]==="."||s[1]==="")&&(t=!0,s.pop())}let n=0;for(;(n=s.indexOf("..",n+1))!==-1;){let i=s[n-1];if(i&&i!=="."&&i!==".."&&i!=="**"){t=!0;let c=n===1&&s[n+1]==="**"?["."]:[];s.splice(n-1,2,...c),s.length===0&&s.push(""),n-=2}}}}while(t);return e}secondPhasePreProcess(e){for(let t=0;t<e.length-1;t++)for(let s=t+1;s<e.length;s++){let r=this.partsMatch(e[t],e[s],!this.preserveMultipleSlashes);if(r){e[t]=[],e[s]=r;break}}return e.filter(t=>t.length)}partsMatch(e,t,s=!1){let r=0,n=0,i=[],a="";for(;r<e.length&&n<t.length;)if(e[r]===t[n])i.push(a==="b"?t[n]:e[r]),r++,n++;else if(s&&e[r]==="**"&&t[n]===e[r+1])i.push(e[r]),r++;else if(s&&t[n]==="**"&&e[r]===t[n+1])i.push(t[n]),n++;else if(e[r]==="*"&&t[n]&&(this.options.dot||!t[n].startsWith("."))&&t[n]!=="**"){if(a==="b")return!1;a="a",i.push(e[r]),r++,n++}else if(t[n]==="*"&&e[r]&&(this.options.dot||!e[r].startsWith("."))&&e[r]!=="**"){if(a==="a")return!1;a="b",i.push(t[n]),r++,n++}else return!1;return e.length===t.length&&i}parseNegate(){if(this.nonegate)return;let e=this.pattern,t=!1,s=0;for(let r=0;r<e.length&&e.charAt(r)==="!";r++)t=!t,s++;s&&(this.pattern=e.slice(s)),this.negate=t}matchOne(e,t,s=!1){let r=this.options;if(this.isWindows){let f=typeof e[0]=="string"&&/^[a-z]:$/i.test(e[0]),w=!f&&e[0]===""&&e[1]===""&&e[2]==="?"&&/^[a-z]:$/i.test(e[3]),y=typeof t[0]=="string"&&/^[a-z]:$/i.test(t[0]),P=!y&&t[0]===""&&t[1]===""&&t[2]==="?"&&typeof t[3]=="string"&&/^[a-z]:$/i.test(t[3]),D=w?3:f?0:void 0,$=P?3:y?0:void 0;if(typeof D=="number"&&typeof $=="number"){let[A,R]=[e[D],t[$]];A.toLowerCase()===R.toLowerCase()&&(t[$]=A,$>D?t=t.slice($):D>$&&(e=e.slice(D)))}}let{optimizationLevel:n=1}=this.options;n>=2&&(e=this.levelTwoFileOptimize(e)),this.debug("matchOne",this,{file:e,pattern:t}),this.debug("matchOne",e.length,t.length);for(var i=0,a=0,c=e.length,d=t.length;i<c&&a<d;i++,a++){this.debug("matchOne loop");var l=t[a],p=e[i];if(this.debug(t,l,p),l===!1)return!1;if(l===I){this.debug("GLOBSTAR",[t,l,p]);var u=i,h=a+1;if(h===d){for(this.debug("** at the end");i<c;i++)if(e[i]==="."||e[i]===".."||!r.dot&&e[i].charAt(0)===".")return!1;return!0}for(;u<c;){var m=e[u];if(this.debug(`
-globstar while`,e,u,t,h,m),this.matchOne(e.slice(u),t.slice(h),s))return this.debug("globstar found match!",u,c,m),!0;if(m==="."||m===".."||!r.dot&&m.charAt(0)==="."){this.debug("dot detected!",e,u,t,h);break}this.debug("globstar swallow a segment, and continue"),u++}return!!(s&&(this.debug(`
->>> no match, partial?`,e,u,t,h),u===c))}let f;if(typeof l=="string"?(f=p===l,this.debug("string match",l,p,f)):(f=l.test(p),this.debug("pattern match",l,p,f)),!f)return!1}if(i===c&&a===d)return!0;if(i===c)return s;if(a===d)return i===c-1&&e[i]==="";throw new Error("wtf?")}braceExpand(){return ht(this.pattern,this.options)}parse(e){X(e);let t=this.options;if(e==="**")return I;if(e==="")return"";let s,r=null;(s=e.match(Jt))?r=t.dot?Zt:Vt:(s=e.match(Wt))?r=(t.nocase?t.dot?zt:Nt:t.dot?jt:Ot)(s[1]):(s=e.match(qt))?r=(t.nocase?t.dot?Xt:Qt:t.dot?Kt:Yt)(s):(s=e.match(_t))?r=t.dot?Bt:Gt:(s=e.match(Ht))&&(r=Ut);let n=H.fromGlob(e,this.options).toMMPattern();return r&&typeof n=="object"&&Reflect.defineProperty(n,"test",{value:r}),n}makeRe(){if(this.regexp||this.regexp===!1)return this.regexp;let e=this.set;if(!e.length)return this.regexp=!1,this.regexp;let t=this.options,s=t.noglobstar?ss:t.dot?rs:ns,r=new Set(t.nocase?["i"]:[]),n=e.map(c=>{let d=c.map(l=>{if(l instanceof RegExp)for(let p of l.flags.split(""))r.add(p);return typeof l=="string"?ds(l):l===I?I:l._src});return d.forEach((l,p)=>{let u=d[p+1],h=d[p-1];l!==I||h===I||(h===void 0?u!==void 0&&u!==I?d[p+1]="(?:\\/|"+s+"\\/)?"+u:d[p]=s:u===void 0?d[p-1]=h+"(?:\\/|"+s+")?":u!==I&&(d[p-1]=h+"(?:\\/|\\/"+s+"\\/)"+u,d[p+1]=I))}),d.filter(l=>l!==I).join("/")}).join("|"),[i,a]=e.length>1?["(?:",")"]:["",""];n="^"+i+n+a+"$",this.negate&&(n="^(?!"+n+").+$");try{this.regexp=new RegExp(n,[...r].join(""))}catch{this.regexp=!1}return this.regexp}slashSplit(e){return this.preserveMultipleSlashes?e.split("/"):this.isWindows&&/^\/\/[^\/]+/.test(e)?["",...e.split(/\/+/)]:e.split(/\/+/)}match(e,t=this.partial){if(this.debug("match",e,this.pattern),this.comment)return!1;if(this.empty)return e==="";if(e==="/"&&t)return!0;let s=this.options;this.isWindows&&(e=e.split("\\").join("/"));let r=this.slashSplit(e);this.debug(this.pattern,"split",r);let n=this.set;this.debug(this.pattern,"set",n);let i=r[r.length-1];if(!i)for(let a=r.length-2;!i&&a>=0;a--)i=r[a];for(let a=0;a<n.length;a++){let c=n[a],d=r;if(s.matchBase&&c.length===1&&(d=[i]),this.matchOne(d,c,t))return s.flipNegate?!0:!this.negate}return s.flipNegate?!1:this.negate}static defaults(e){return x.defaults(e).Minimatch}};x.AST=H;x.Minimatch=U;x.escape=Re;x.unescape=_;var le=class{parserRegistry;analyzer;config;scanResults=new Map;constructor(e){this.parserRegistry=ae.getInstance(),this.analyzer=new ce,this.config=e}updateConfig(e){this.config=e}async scanWorkspace(e){let t=J.workspace.workspaceFolders;if(!t)return[];let s=[];for(let r of t){e?.report({message:`Scanning ${r.name}...`});let n=await this.findSupportedFiles(r.uri),i=n.length,a=0;for(let c of n){try{let d=await J.workspace.openTextDocument(c),l=await this.scanDocument(d);s.push(...l),this.scanResults.set(c.fsPath,l)}catch(d){S.error(`Error scanning ${c.fsPath}:`,d)}a++,e?.report({message:`Scanning ${r.name}... (${a}/${i})`,increment:1/i*100})}}return s}async scanDocument(e){if(this.shouldExclude(e.uri.fsPath))return[];if(!this.config.supportedLanguages.includes(e.languageId))return[];let t=this.parserRegistry.getParser(e);if(!t)return[];let r=(await this.parserRegistry.parseDocument(e)).map(n=>this.analyzer.analyzePair(n,t));return this.scanResults.set(e.uri.fsPath,r),r}getResultsForFile(e){return this.scanResults.get(e)}getAllResults(){let e=[];for(let t of this.scanResults.values())e.push(...t);return e}clearResults(){this.scanResults.clear()}clearResultsForFile(e){this.scanResults.delete(e)}async findSupportedFiles(e){let s=`**/*{${this.getSupportedExtensions().join(",")}}`;return await J.workspace.findFiles(new J.RelativePattern(e,s),this.getExcludePattern())}getSupportedExtensions(){let e=[];for(let t of this.config.supportedLanguages){let s=this.parserRegistry.getParserByLanguageId(t);s&&e.push(...s.fileExtensions)}return[...new Set(e)]}getExcludePattern(){return`{${this.config.excludePatterns.join(",")}}`}shouldExclude(e){for(let t of this.config.excludePatterns)if(x(e,t,{dot:!0}))return!0;return!1}getAnalyzer(){return this.analyzer}};var v=C(require("vscode"));var Ee=C(require("path")),Y=class o extends v.TreeItem{constructor(t,s){let r=o.getSeverityFromScore(t.driftScore),n=o.getSeverityIcon(r);super(`${n} ${t.codeSignature.name}`,v.TreeItemCollapsibleState.Collapsed);this.pair=t;this.workspaceFolder=s;let i=Ee.relative(s,t.filePath);this.description=`${i}:${t.docRange.start.line+1}`,this.tooltip=new v.MarkdownString,this.tooltip.appendMarkdown(`**${t.codeSignature.name}**
-
-`),this.tooltip.appendMarkdown(`Drift Score: ${Math.round(t.driftScore*100)}%
-
-`),this.tooltip.appendMarkdown(`File: ${i}
-
-`),this.tooltip.appendMarkdown(`Line: ${t.docRange.start.line+1}`),this.iconPath=new v.ThemeIcon(this.getThemeIconName(r),this.getIconColor(r)),this.contextValue="driftItem",this.command={command:"vscode.open",title:"Open",arguments:[v.Uri.file(t.filePath),{selection:new v.Range(t.docRange.start,t.docRange.end)}]}}getThemeIconName(t){switch(t){case"critical":return"error";case"high":return"warning";case"medium":return"info";case"low":return"circle-outline";default:return"question"}}getIconColor(t){switch(t){case"critical":return new v.ThemeColor("errorForeground");case"high":return new v.ThemeColor("editorWarning.foreground");case"medium":return new v.ThemeColor("editorInfo.foreground");case"low":return new v.ThemeColor("foreground");default:return new v.ThemeColor("foreground")}}static getSeverityFromScore(t){return t>=.8?"critical":t>=.6?"high":t>=.4?"medium":"low"}static getSeverityIcon(t){switch(t){case"critical":return"\u{1F534}";case"high":return"\u{1F7E0}";case"medium":return"\u{1F7E1}";case"low":return"\u26AA";default:return"\u2753"}}},Me=class extends v.TreeItem{constructor(t,s,r){super(t,v.TreeItemCollapsibleState.None);this.message=t;this.details=s;this.severity=r;this.description=s,this.iconPath=new v.ThemeIcon(this.getThemeIconName(r),this.getIconColor(r))}getThemeIconName(t){switch(t){case"critical":return"circle-filled";case"high":return"circle-filled";case"medium":return"circle-outline";case"low":return"dash";default:return"dash"}}getIconColor(t){switch(t){case"critical":return new v.ThemeColor("errorForeground");case"high":return new v.ThemeColor("editorWarning.foreground");case"medium":return new v.ThemeColor("editorInfo.foreground");case"low":return new v.ThemeColor("foreground");default:return new v.ThemeColor("foreground")}}},ue=class extends v.TreeItem{constructor(t,s,r){let n=Ee.relative(r,t),i=Math.max(...s.map(a=>a.driftScore));super(n,v.TreeItemCollapsibleState.Expanded);this.filePath=t;this.pairs=s;this.workspaceFolder=r;this.description=`${s.length} issue${s.length>1?"s":""}`,this.iconPath=v.ThemeIcon.File,this.resourceUri=v.Uri.file(t),this.contextValue="fileGroup"}},he=class{_onDidChangeTreeData=new v.EventEmitter;onDidChangeTreeData=this._onDidChangeTreeData.event;pairs=[];groupByFile=!0;workspaceFolder="";constructor(){let e=v.workspace.workspaceFolders;e&&e.length>0&&(this.workspaceFolder=e[0].uri.fsPath)}updatePairs(e){this.pairs=e.filter(t=>!t.isReviewed&&t.driftScore>0).sort((t,s)=>s.driftScore-t.driftScore),this._onDidChangeTreeData.fire()}markAsReviewed(e){let t=this.pairs.find(s=>s.id===e);t&&(t.isReviewed=!0,t.reviewedAt=new Date,this._onDidChangeTreeData.fire())}refresh(){this._onDidChangeTreeData.fire()}toggleGroupByFile(){this.groupByFile=!this.groupByFile,this._onDidChangeTreeData.fire()}getTreeItem(e){return e}getChildren(e){return e?e instanceof ue?e.pairs.map(t=>new Y(t,this.workspaceFolder)):e instanceof Y?e.pair.driftReasons.map(t=>new Me(t.message,t.details,t.severity)):[]:this.pairs.length===0?[this.createEmptyStateItem()]:this.groupByFile?this.getFileGroups():this.pairs.map(t=>new Y(t,this.workspaceFolder))}getFileGroups(){let e=new Map;for(let t of this.pairs){let s=e.get(t.filePath)||[];s.push(t),e.set(t.filePath,s)}return Array.from(e.entries()).map(([t,s])=>new ue(t,s,this.workspaceFolder)).sort((t,s)=>{let r=Math.max(...t.pairs.map(i=>i.driftScore));return Math.max(...s.pairs.map(i=>i.driftScore))-r})}createEmptyStateItem(){let e=new v.TreeItem("No documentation drift detected \u2713");return e.iconPath=new v.ThemeIcon("check",new v.ThemeColor("testing.iconPassed")),e.description='Run "Drift: Scan Workspace" to check',e}getPairById(e){return this.pairs.find(t=>t.id===e)}getAllPairs(){return this.pairs}getStatistics(){return{total:this.pairs.length,critical:this.pairs.filter(e=>e.driftScore>=.8).length,high:this.pairs.filter(e=>e.driftScore>=.6&&e.driftScore<.8).length,medium:this.pairs.filter(e=>e.driftScore>=.4&&e.driftScore<.6).length,low:this.pairs.filter(e=>e.driftScore<.4).length}}};var T=C(require("vscode"));var pe=class{gutterDecorationType;inlineDecorationTypes;activeDecorations=new Map;constructor(){this.gutterDecorationType=T.window.createTextEditorDecorationType({gutterIconPath:this.getIconPath("warning"),gutterIconSize:"contain"}),this.inlineDecorationTypes=new Map([["critical",T.window.createTextEditorDecorationType({backgroundColor:"rgba(255, 0, 0, 0.1)",border:"1px solid rgba(255, 0, 0, 0.3)",borderRadius:"3px",after:{contentText:" \u26A0 Documentation may be stale (critical)",color:"rgba(255, 100, 100, 0.8)",fontStyle:"italic",margin:"0 0 0 1em"}})],["high",T.window.createTextEditorDecorationType({backgroundColor:"rgba(255, 165, 0, 0.1)",border:"1px solid rgba(255, 165, 0, 0.3)",borderRadius:"3px",after:{contentText:" \u26A0 Documentation may be stale",color:"rgba(255, 180, 100, 0.8)",fontStyle:"italic",margin:"0 0 0 1em"}})],["medium",T.window.createTextEditorDecorationType({backgroundColor:"rgba(255, 255, 0, 0.05)",border:"1px solid rgba(255, 255, 0, 0.2)",borderRadius:"3px",after:{contentText:" \u25CB Review documentation",color:"rgba(200, 200, 100, 0.7)",fontStyle:"italic",margin:"0 0 0 1em"}})],["low",T.window.createTextEditorDecorationType({after:{contentText:" \xB7 Minor drift detected",color:"rgba(150, 150, 150, 0.5)",fontStyle:"italic",margin:"0 0 0 1em"}})]])}applyDecorations(e,t,s){this.clearDecorations(e);let r=[],n=new Map([["critical",[]],["high",[]],["medium",[]],["low",[]]]);for(let i of t){if(i.driftScore<s.threshold||i.isReviewed)continue;let a=this.getSeverityFromScore(i.driftScore),c=this.createHoverMessage(i);if(s.enableGutter&&r.push({range:new T.Range(i.docRange.start,i.docRange.start),hoverMessage:c}),s.enableInline){let d=n.get(a);d&&d.push({range:new T.Range(i.docRange.start,new T.Position(i.docRange.start.line,i.docRange.start.character+3)),hoverMessage:c})}}if(s.enableGutter&&r.length>0&&(e.setDecorations(this.gutterDecorationType,r),this.trackDecoration(e.document.uri.toString(),this.gutterDecorationType)),s.enableInline){for(let[i,a]of n)if(a.length>0){let c=this.inlineDecorationTypes.get(i);c&&(e.setDecorations(c,a),this.trackDecoration(e.document.uri.toString(),c))}}}clearDecorations(e){let t=e.document.uri.toString(),s=this.activeDecorations.get(t);if(s){for(let r of s)e.setDecorations(r,[]);this.activeDecorations.delete(t)}}clearAllDecorations(){for(let e of T.window.visibleTextEditors)this.clearDecorations(e);this.activeDecorations.clear()}trackDecoration(e,t){let s=this.activeDecorations.get(e)||[];s.includes(t)||s.push(t),this.activeDecorations.set(e,s)}getSeverityFromScore(e){return e>=.8?"critical":e>=.6?"high":e>=.4?"medium":"low"}createHoverMessage(e){let t=new T.MarkdownString;t.isTrusted=!0;let s=this.getSeverityFromScore(e.driftScore),r=this.getSeverityIcon(s);if(t.appendMarkdown(`## ${r} Documentation Drift Detected
-
-`),t.appendMarkdown(`**Drift Score:** ${Math.round(e.driftScore*100)}%
-
-`),t.appendMarkdown(`**Function:** \`${e.codeSignature.name}\`
-
-`),e.driftReasons.length>0){t.appendMarkdown(`### Issues Found:
-
-`);for(let n of e.driftReasons){let i=this.getSeverityIcon(n.severity);t.appendMarkdown(`${i} **${n.message}**
-`),n.details&&t.appendMarkdown(`  - ${n.details}
-`),t.appendMarkdown(`
-`)}}return t.appendMarkdown(`---
-
-`),t.appendMarkdown(`[Mark as Reviewed](command:drift.markAsReviewed?${encodeURIComponent(JSON.stringify({id:e.id}))})`),t.appendMarkdown(" | "),t.appendMarkdown(`[Go to Code](command:drift.goToCode?${encodeURIComponent(JSON.stringify({line:e.codeRange.start.line}))})`),t}getSeverityIcon(e){switch(e){case"critical":return"\u{1F534}";case"high":return"\u{1F7E0}";case"medium":return"\u{1F7E1}";case"low":return"\u26AA";default:return"\u2753"}}getIconPath(e){return T.Uri.parse(`data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                <circle cx="8" cy="8" r="6" fill="orange" opacity="0.8"/>
-                <text x="8" y="11" text-anchor="middle" fill="white" font-size="10" font-weight="bold">!</text>
-            </svg>`)}`)}dispose(){this.gutterDecorationType.dispose();for(let e of this.inlineDecorationTypes.values())e.dispose()}};var j=C(require("vscode")),fe=class{_onDidChangeCodeLenses=new j.EventEmitter;onDidChangeCodeLenses=this._onDidChangeCodeLenses.event;pairs=new Map;stateManager;constructor(e){this.stateManager=e}updatePairs(e,t){this.pairs.set(e,t),this._onDidChangeCodeLenses.fire()}clearPairs(e){this.pairs.delete(e),this._onDidChangeCodeLenses.fire()}refresh(){this._onDidChangeCodeLenses.fire()}provideCodeLenses(e,t){let s=this.pairs.get(e.uri.toString());if(!s)return[];let r=[];for(let n of s){let i=this.stateManager.getTrackingStatus(n),a=new j.Range(n.docRange.start.line,0,n.docRange.start.line,0);i==="untracked"?r.push(new j.CodeLens(a,{title:"$(eye) Track Drift",tooltip:"Start tracking this documentation for drift",command:"drift.trackPair",arguments:[n]})):i==="drifted"||n.driftScore>0?(r.push(new j.CodeLens(a,{title:"$(sync) Review & Sync",tooltip:"Mark documentation as reviewed and sync with current code",command:"drift.reviewAndSync",arguments:[n]})),n.driftScore>0&&r.push(new j.CodeLens(a,{title:`$(warning) ${Math.round(n.driftScore*100)}% drift detected`,tooltip:n.driftReasons.map(c=>c.message).join(`
-`),command:"drift.showDriftDetails",arguments:[n]}))):i==="synced"&&r.push(new j.CodeLens(a,{title:"$(check) Synced",tooltip:"Documentation is in sync with code",command:""}))}return r}resolveCodeLens(e,t){return e}};var ge=C(require("vscode")),F=C(require("fs")),V=C(require("path"));var ke="1.0.0",ls=".drift",us="state.json",me=class{state;stateFilePath=null;isDirty=!1;constructor(){this.state={version:ke,pairs:new Map}}async initialize(){let e=ge.workspace.workspaceFolders;if(!e||e.length===0)return;let t=e[0].uri.fsPath,s=V.join(t,ls);this.stateFilePath=V.join(s,us),await this.loadState()}async loadState(){if(this.stateFilePath)try{if(F.existsSync(this.stateFilePath)){let e=F.readFileSync(this.stateFilePath,"utf-8"),t=JSON.parse(e);this.state={version:t.version||ke,pairs:new Map(Object.entries(t.pairs||{})),lastFullScan:t.lastFullScan?new Date(t.lastFullScan):void 0}}}catch(e){S.error("Error loading drift state:",e),this.state={version:ke,pairs:new Map}}}async saveState(){if(this.stateFilePath)try{let e=V.dirname(this.stateFilePath);if(!F.existsSync(e)){F.mkdirSync(e,{recursive:!0});let s=V.join(e,".gitignore");F.existsSync(s)||F.writeFileSync(s,`# Uncomment the line below to ignore drift state
-# state.json
-`)}let t={version:this.state.version,pairs:Object.fromEntries(this.state.pairs),lastFullScan:this.state.lastFullScan?.toISOString()};F.writeFileSync(this.stateFilePath,JSON.stringify(t,null,2)),this.isDirty=!1}catch(e){S.error("Error saving drift state:",e),ge.window.showErrorMessage("Failed to save drift state")}}getPairState(e){return this.state.pairs.get(e)}updatePairState(e){let t={id:e.id,filePath:e.filePath,codeHash:e.codeSignature.hash,docHash:O(e.docContent),isReviewed:e.isReviewed,reviewedAt:e.reviewedAt,driftScore:e.driftScore};this.state.pairs.set(e.id,t),this.isDirty=!0}markAsReviewed(e){e.isReviewed=!0,e.reviewedAt=new Date,this.updatePairState(e)}hasCodeChanged(e){let t=this.state.pairs.get(e.id);return t?t.codeHash!==e.codeSignature.hash:!1}isTracked(e){return this.state.pairs.has(e)}getTrackingStatus(e){let t=this.state.pairs.get(e.id);return t?t.codeHash===e.codeSignature.hash?"synced":"drifted":"untracked"}removePairState(e){this.state.pairs.delete(e),this.isDirty=!0}clearAllState(){this.state.pairs.clear(),this.isDirty=!0}setLastFullScan(e){this.state.lastFullScan=e,this.isDirty=!0}getLastFullScan(){return this.state.lastFullScan}hasPendingChanges(){return this.isDirty}getAllTrackedPairs(){return Array.from(this.state.pairs.values())}getStatistics(){let e=0,t=0;for(let s of this.state.pairs.values())s.isReviewed?e++:t++;return{tracked:this.state.pairs.size,synced:e,drifted:t}}};var b,W,we,M,E;async function hs(o){S.initialize("Drift"),S.log("Drift extension activated");let e=ye();E=new me,await E.initialize(),b=new le(e),W=new he,we=new pe,M=new fe(E);let t=g.window.createTreeView("driftDashboard",{treeDataProvider:W,showCollapseAll:!0}),s=g.languages.registerCodeLensProvider([{language:"typescript"},{language:"javascript"},{language:"typescriptreact"},{language:"javascriptreact"},{language:"python"}],M);ps(o),fs(o,e),o.subscriptions.push(t,s,{dispose:()=>we.dispose()}),await ms(),ws(o),S.log("Drift extension ready")}function ye(){let o=g.workspace.getConfiguration("drift");return{enableGutterIcons:o.get("enableGutterIcons",!0),enableInlineDecorations:o.get("enableInlineDecorations",!0),excludePatterns:o.get("excludePatterns",["**/node_modules/**","**/dist/**","**/build/**","**/.git/**"]),supportedLanguages:o.get("supportedLanguages",["javascript","typescript","javascriptreact","typescriptreact","python"]),driftThreshold:o.get("driftThreshold",.3)}}function ps(o){o.subscriptions.push(g.commands.registerCommand("drift.scanWorkspace",async()=>{await g.window.withProgress({location:g.ProgressLocation.Notification,title:"Drift: Scanning workspace...",cancellable:!1},async e=>{let t=await b.scanWorkspace(e);W.updatePairs(t),ve(),gs(),E.setLastFullScan(new Date),await E.saveState();let s=W.getStatistics();g.window.showInformationMessage(`Drift scan complete: ${s.total} potential issues found (${s.critical} critical, ${s.high} high, ${s.medium} medium, ${s.low} low)`),g.commands.executeCommand("drift.showDashboard"),S.log(`Scan complete: ${t.length} doc-code pairs analyzed`)})})),o.subscriptions.push(g.commands.registerCommand("drift.scanCurrentFile",async()=>{let e=g.window.activeTextEditor;if(!e){g.window.showWarningMessage("No active editor");return}let t=await b.scanDocument(e.document),s=b.getAllResults();W.updatePairs(s),B(e,t),M.updatePairs(e.document.uri.toString(),t);let r=t.filter(n=>n.driftScore>=ye().driftThreshold);r.length>0?g.window.showInformationMessage(`Drift: Found ${r.length} potential documentation issues in this file`):g.window.showInformationMessage("Drift: No documentation issues found in this file")})),o.subscriptions.push(g.commands.registerCommand("drift.markAsReviewed",async e=>{let t=e?.id;if(!t){let s=g.window.activeTextEditor;if(s){let r=b.getResultsForFile(s.document.uri.fsPath);if(r){let n=s.selection.active.line,i=r.find(a=>a.docRange.start.line<=n&&a.codeRange.end.line>=n);i&&(t=i.id)}}}if(t){W.markAsReviewed(t);let s=W.getPairById(t);s&&(E.markAsReviewed(s),await E.saveState()),ve(),M.refresh(),g.window.showInformationMessage("Documentation marked as reviewed")}})),o.subscriptions.push(g.commands.registerCommand("drift.trackPair",async e=>{E.updatePairState(e),await E.saveState(),M.refresh(),g.window.showInformationMessage(`Now tracking drift for "${e.codeSignature.name}"`)})),o.subscriptions.push(g.commands.registerCommand("drift.reviewAndSync",async e=>{E.markAsReviewed(e),await E.saveState(),W.markAsReviewed(e.id),ve(),M.refresh(),g.window.showInformationMessage(`Documentation for "${e.codeSignature.name}" marked as synced`)})),o.subscriptions.push(g.commands.registerCommand("drift.showDriftDetails",async e=>{let t=e.driftReasons.map(r=>({label:`$(warning) ${r.message}`,description:r.details,detail:`Severity: ${r.severity}`})),s=await g.window.showQuickPick(t,{title:`Drift Details for ${e.codeSignature.name}`,placeHolder:"Select an issue to see details"})})),o.subscriptions.push(g.commands.registerCommand("drift.showDashboard",()=>{g.commands.executeCommand("driftDashboard.focus")})),o.subscriptions.push(g.commands.registerCommand("drift.refreshDashboard",async()=>{await g.commands.executeCommand("drift.scanWorkspace")})),o.subscriptions.push(g.commands.registerCommand("drift.goToCode",async e=>{let t=g.window.activeTextEditor;if(t&&e?.line!==void 0){let s=new g.Position(e.line,0);t.selection=new g.Selection(s,s),t.revealRange(new g.Range(s,s),g.TextEditorRevealType.InCenter)}}))}function fs(o,e){let t=Ne(async s=>{let r=await b.scanDocument(s),n=b.getAllResults();W.updatePairs(n);let i=g.window.visibleTextEditors.find(a=>a.document.uri.toString()===s.uri.toString());i&&(B(i,r),M.updatePairs(s.uri.toString(),r))},1e3);o.subscriptions.push(g.workspace.onDidChangeTextDocument(s=>{s.contentChanges.length>0&&t(s.document)})),o.subscriptions.push(g.workspace.onDidOpenTextDocument(async s=>{let r=await b.scanDocument(s),n=g.window.visibleTextEditors.find(i=>i.document.uri.toString()===s.uri.toString());n&&(B(n,r),M.updatePairs(s.uri.toString(),r))})),o.subscriptions.push(g.window.onDidChangeActiveTextEditor(async s=>{if(s){let r=b.getResultsForFile(s.document.uri.fsPath);r||(r=await b.scanDocument(s.document)),B(s,r),M.updatePairs(s.document.uri.toString(),r)}})),o.subscriptions.push(g.workspace.onDidChangeConfiguration(s=>{if(s.affectsConfiguration("drift")){let r=ye();b.updateConfig(r),ve(),M.refresh()}})),o.subscriptions.push(g.workspace.onDidSaveTextDocument(async s=>{let r=await b.scanDocument(s),n=b.getAllResults();W.updatePairs(n);let i=g.window.visibleTextEditors.find(a=>a.document.uri.toString()===s.uri.toString());i&&(B(i,r),M.updatePairs(s.uri.toString(),r))})),o.subscriptions.push(g.workspace.onDidCloseTextDocument(s=>{M.clearPairs(s.uri.toString())}))}async function ms(){for(let e of g.window.visibleTextEditors){let t=await b.scanDocument(e.document);B(e,t),M.updatePairs(e.document.uri.toString(),t)}let o=b.getAllResults();W.updatePairs(o)}function B(o,e){let t=ye();we.applyDecorations(o,e,{enableGutter:t.enableGutterIcons,enableInline:t.enableInlineDecorations,threshold:t.driftThreshold})}function ve(){for(let o of g.window.visibleTextEditors){let e=b.getResultsForFile(o.document.uri.fsPath)||[];B(o,e)}}function gs(){for(let o of g.window.visibleTextEditors){let e=b.getResultsForFile(o.document.uri.fsPath)||[];M.updatePairs(o.document.uri.toString(),e)}}async function vs(){E?.hasPendingChanges()&&await E.saveState(),we?.clearAllDecorations(),S.log("Drift extension deactivated"),S.dispose()}async function ws(o){g.env.isTelemetryEnabled&&S.log("Telemetry: Activation ping sent (simulated)")}0&&(module.exports={activate,deactivate});
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.activate = activate;
+exports.deactivate = deactivate;
+const vscode = __importStar(require("vscode"));
+const workspaceScanner_1 = require("./analyzers/workspaceScanner");
+const dashboardProvider_1 = require("./providers/dashboardProvider");
+const decorationProvider_1 = require("./providers/decorationProvider");
+const codeLensProvider_1 = require("./providers/codeLensProvider");
+const quickFixProvider_1 = require("./providers/quickFixProvider");
+const stateManager_1 = require("./providers/stateManager");
+const helpers_1 = require("./utils/helpers");
+const logger_1 = require("./utils/logger");
+let scanner;
+let dashboardProvider;
+let decorationProvider;
+let codeLensProvider;
+let stateManager;
+/**
+ * Extension activation
+ */
+async function activate(context) {
+    logger_1.DriftLogger.initialize('Drift');
+    logger_1.DriftLogger.log('Drift extension activated');
+    // Load configuration
+    const config = loadConfig();
+    // Initialize state manager
+    stateManager = new stateManager_1.StateManager();
+    await stateManager.initialize();
+    // Initialize components
+    scanner = new workspaceScanner_1.WorkspaceScanner(config);
+    dashboardProvider = new dashboardProvider_1.DriftDashboardProvider();
+    decorationProvider = new decorationProvider_1.DecorationProvider();
+    codeLensProvider = new codeLensProvider_1.DriftCodeLensProvider(stateManager);
+    // Register the tree view
+    const treeView = vscode.window.createTreeView('driftDashboard', {
+        treeDataProvider: dashboardProvider,
+        showCollapseAll: true
+    });
+    // Register CodeLens provider
+    const codeLensDisposable = vscode.languages.registerCodeLensProvider([
+        { language: 'typescript' },
+        { language: 'javascript' },
+        { language: 'typescriptreact' },
+        { language: 'javascriptreact' },
+        { language: 'python' }
+    ], codeLensProvider);
+    // Register commands
+    registerCommands(context);
+    // Register event listeners
+    registerEventListeners(context, config);
+    // Register QuickFix provider
+    const quickFixProvider = new quickFixProvider_1.QuickFixProvider(scanner);
+    const quickFixSelector = [
+        { language: 'typescript', scheme: 'file' },
+        { language: 'javascript', scheme: 'file' },
+        { language: 'typescriptreact', scheme: 'file' },
+        { language: 'javascriptreact', scheme: 'file' },
+        { language: 'python', scheme: 'file' },
+        { language: 'java', scheme: 'file' },
+        { language: 'go', scheme: 'file' },
+        { language: 'rust', scheme: 'file' }
+    ];
+    context.subscriptions.push(vscode.languages.registerCodeActionsProvider(quickFixSelector, quickFixProvider, { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] }));
+    // Add disposables
+    context.subscriptions.push(treeView, codeLensDisposable, { dispose: () => decorationProvider.dispose() });
+    // Initial scan of open documents
+    await scanOpenDocuments();
+    // Check for welcome message - Disabled until feedback form is ready
+    // checkWelcomeMessage(context);
+    // Send activation ping (telemetry)
+    sendActivationPing(context);
+    logger_1.DriftLogger.log('Drift extension ready');
+}
+/**
+ * Load configuration from VS Code settings
+ */
+function loadConfig() {
+    const config = vscode.workspace.getConfiguration('drift');
+    return {
+        enableGutterIcons: config.get('enableGutterIcons', true),
+        enableInlineDecorations: config.get('enableInlineDecorations', true),
+        excludePatterns: config.get('excludePatterns', [
+            '**/node_modules/**',
+            '**/dist/**',
+            '**/build/**',
+            '**/.git/**'
+        ]),
+        supportedLanguages: config.get('supportedLanguages', [
+            'javascript',
+            'typescript',
+            'javascriptreact',
+            'typescriptreact',
+            'python'
+        ]),
+        driftThreshold: config.get('driftThreshold', 0.3)
+    };
+}
+/**
+ * Register all commands
+ */
+function registerCommands(context) {
+    // Scan workspace command
+    context.subscriptions.push(vscode.commands.registerCommand('drift.scanWorkspace', async () => {
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: 'Drift: Scanning workspace...',
+            cancellable: false
+        }, async (progress) => {
+            const pairs = await scanner.scanWorkspace(progress);
+            dashboardProvider.updatePairs(pairs);
+            updateDecorationsForVisibleEditors();
+            updateCodeLensForVisibleEditors();
+            // Update state manager with scan time
+            stateManager.setLastFullScan(new Date());
+            await stateManager.saveState();
+            const stats = dashboardProvider.getStatistics();
+            vscode.window.showInformationMessage(`Drift scan complete: ${stats.total} potential issues found ` +
+                `(${stats.critical} critical, ${stats.high} high, ${stats.medium} medium, ${stats.low} low)`);
+            // Auto-open dashboard based on user feedback
+            vscode.commands.executeCommand('drift.showDashboard');
+            logger_1.DriftLogger.log(`Scan complete: ${pairs.length} doc-code pairs analyzed`);
+        });
+    }));
+    // Scan current file command
+    context.subscriptions.push(vscode.commands.registerCommand('drift.scanCurrentFile', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showWarningMessage('No active editor');
+            return;
+        }
+        const pairs = await scanner.scanDocument(editor.document);
+        // Update dashboard with all results
+        const allPairs = scanner.getAllResults();
+        dashboardProvider.updatePairs(allPairs);
+        // Update decorations and CodeLens
+        updateDecorationsForEditor(editor, pairs);
+        codeLensProvider.updatePairs(editor.document.uri.toString(), pairs);
+        const driftPairs = pairs.filter(p => p.driftScore >= loadConfig().driftThreshold);
+        if (driftPairs.length > 0) {
+            vscode.window.showInformationMessage(`Drift: Found ${driftPairs.length} potential documentation issues in this file`);
+        }
+        else {
+            vscode.window.showInformationMessage('Drift: No documentation issues found in this file');
+        }
+    }));
+    // Mark as reviewed command
+    context.subscriptions.push(vscode.commands.registerCommand('drift.markAsReviewed', async (args) => {
+        let pairId = args?.id;
+        if (!pairId) {
+            // Try to get from selection in tree view or current position
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const pairs = scanner.getResultsForFile(editor.document.uri.fsPath);
+                if (pairs) {
+                    const currentLine = editor.selection.active.line;
+                    const pair = pairs.find(p => p.docRange.start.line <= currentLine &&
+                        p.codeRange.end.line >= currentLine);
+                    if (pair) {
+                        pairId = pair.id;
+                    }
+                }
+            }
+        }
+        if (pairId) {
+            dashboardProvider.markAsReviewed(pairId);
+            // Get the pair and update state
+            const pair = dashboardProvider.getPairById(pairId);
+            if (pair) {
+                stateManager.markAsReviewed(pair);
+                await stateManager.saveState();
+            }
+            updateDecorationsForVisibleEditors();
+            codeLensProvider.refresh();
+            vscode.window.showInformationMessage('Documentation marked as reviewed');
+        }
+    }));
+    // Track pair command (from CodeLens)
+    context.subscriptions.push(vscode.commands.registerCommand('drift.trackPair', async (pair) => {
+        stateManager.updatePairState(pair);
+        await stateManager.saveState();
+        codeLensProvider.refresh();
+        vscode.window.showInformationMessage(`Now tracking drift for "${pair.codeSignature.name}"`);
+    }));
+    // Review and sync command (from CodeLens)
+    context.subscriptions.push(vscode.commands.registerCommand('drift.reviewAndSync', async (pair) => {
+        stateManager.markAsReviewed(pair);
+        await stateManager.saveState();
+        dashboardProvider.markAsReviewed(pair.id);
+        updateDecorationsForVisibleEditors();
+        codeLensProvider.refresh();
+        vscode.window.showInformationMessage(`Documentation for "${pair.codeSignature.name}" marked as synced`);
+    }));
+    // Show drift details command (from CodeLens)
+    context.subscriptions.push(vscode.commands.registerCommand('drift.showDriftDetails', async (pair) => {
+        const items = pair.driftReasons.map(reason => ({
+            label: `$(warning) ${reason.message}`,
+            description: reason.details,
+            detail: `Severity: ${reason.severity}`
+        }));
+        const selected = await vscode.window.showQuickPick(items, {
+            title: `Drift Details for ${pair.codeSignature.name}`,
+            placeHolder: 'Select an issue to see details'
+        });
+        if (selected) {
+            // Could navigate to specific issue location in future
+        }
+    }));
+    // Show dashboard command
+    context.subscriptions.push(vscode.commands.registerCommand('drift.showDashboard', () => {
+        vscode.commands.executeCommand('driftDashboard.focus');
+    }));
+    // Refresh dashboard command
+    context.subscriptions.push(vscode.commands.registerCommand('drift.refreshDashboard', async () => {
+        await vscode.commands.executeCommand('drift.scanWorkspace');
+    }));
+    // Share feedback command - Disabled until feedback form is ready
+    // context.subscriptions.push(
+    //     vscode.commands.registerCommand('drift.shareFeedback', async () => {
+    //         const feedbackUrl = 'https://forms.google.com/your-form-link'; // Placeholder
+    //         await vscode.env.openExternal(vscode.Uri.parse(feedbackUrl));
+    //     })
+    // );
+    // Go to code command (used in hover messages)
+    context.subscriptions.push(vscode.commands.registerCommand('drift.goToCode', async (args) => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor && args?.line !== undefined) {
+            const position = new vscode.Position(args.line, 0);
+            editor.selection = new vscode.Selection(position, position);
+            editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+        }
+    }));
+}
+/**
+ * Register event listeners
+ */
+function registerEventListeners(context, config) {
+    // Debounced document change handler
+    const debouncedScan = (0, helpers_1.debounce)(async (document) => {
+        const pairs = await scanner.scanDocument(document);
+        // Update dashboard
+        const allPairs = scanner.getAllResults();
+        dashboardProvider.updatePairs(allPairs);
+        // Update decorations for this document
+        const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === document.uri.toString());
+        if (editor) {
+            updateDecorationsForEditor(editor, pairs);
+            codeLensProvider.updatePairs(document.uri.toString(), pairs);
+        }
+    }, 1000);
+    // Document change listener
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((event) => {
+        if (event.contentChanges.length > 0) {
+            debouncedScan(event.document);
+        }
+    }));
+    // Document open listener
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async (document) => {
+        const pairs = await scanner.scanDocument(document);
+        const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === document.uri.toString());
+        if (editor) {
+            updateDecorationsForEditor(editor, pairs);
+            codeLensProvider.updatePairs(document.uri.toString(), pairs);
+        }
+    }));
+    // Active editor change listener
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+        if (editor) {
+            let pairs = scanner.getResultsForFile(editor.document.uri.fsPath);
+            if (!pairs) {
+                pairs = await scanner.scanDocument(editor.document);
+            }
+            updateDecorationsForEditor(editor, pairs);
+            codeLensProvider.updatePairs(editor.document.uri.toString(), pairs);
+        }
+    }));
+    // Configuration change listener
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration('drift')) {
+            const newConfig = loadConfig();
+            scanner.updateConfig(newConfig);
+            updateDecorationsForVisibleEditors();
+            codeLensProvider.refresh();
+        }
+    }));
+    // Document save listener
+    context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(async (document) => {
+        const pairs = await scanner.scanDocument(document);
+        const allPairs = scanner.getAllResults();
+        dashboardProvider.updatePairs(allPairs);
+        const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === document.uri.toString());
+        if (editor) {
+            updateDecorationsForEditor(editor, pairs);
+            codeLensProvider.updatePairs(document.uri.toString(), pairs);
+        }
+    }));
+    // Document close listener - clean up CodeLens
+    context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((document) => {
+        codeLensProvider.clearPairs(document.uri.toString());
+    }));
+}
+/**
+ * Scan all currently open documents
+ */
+async function scanOpenDocuments() {
+    for (const editor of vscode.window.visibleTextEditors) {
+        const pairs = await scanner.scanDocument(editor.document);
+        updateDecorationsForEditor(editor, pairs);
+        codeLensProvider.updatePairs(editor.document.uri.toString(), pairs);
+    }
+    const allPairs = scanner.getAllResults();
+    dashboardProvider.updatePairs(allPairs);
+}
+/**
+ * Update decorations for a specific editor
+ */
+function updateDecorationsForEditor(editor, pairs) {
+    const config = loadConfig();
+    decorationProvider.applyDecorations(editor, pairs, {
+        enableGutter: config.enableGutterIcons,
+        enableInline: config.enableInlineDecorations,
+        threshold: config.driftThreshold
+    });
+}
+/**
+ * Update decorations for all visible editors
+ */
+function updateDecorationsForVisibleEditors() {
+    for (const editor of vscode.window.visibleTextEditors) {
+        const pairs = scanner.getResultsForFile(editor.document.uri.fsPath) || [];
+        updateDecorationsForEditor(editor, pairs);
+    }
+}
+/**
+ * Update CodeLens for all visible editors
+ */
+function updateCodeLensForVisibleEditors() {
+    for (const editor of vscode.window.visibleTextEditors) {
+        const pairs = scanner.getResultsForFile(editor.document.uri.fsPath) || [];
+        codeLensProvider.updatePairs(editor.document.uri.toString(), pairs);
+    }
+}
+/**
+ * Extension deactivation
+ */
+async function deactivate() {
+    // Save any pending state changes
+    if (stateManager?.hasPendingChanges()) {
+        await stateManager.saveState();
+    }
+    decorationProvider?.clearAllDecorations();
+    logger_1.DriftLogger.log('Drift extension deactivated');
+    logger_1.DriftLogger.dispose();
+}
+/**
+ * Check if welcome message should be shown
+ */
+async function checkWelcomeMessage(context) {
+    const hasShownWelcome = context.globalState.get('drift.hasShownWelcome', false);
+    if (!hasShownWelcome) {
+        const selection = await vscode.window.showInformationMessage('If Drift saves you time, please help me by sharing your story here.', 'Share Feedback', 'Dismiss');
+        if (selection === 'Share Feedback') {
+            vscode.commands.executeCommand('drift.shareFeedback');
+        }
+        await context.globalState.update('drift.hasShownWelcome', true);
+    }
+}
+/**
+ * Send activation ping (telemetry)
+ */
+async function sendActivationPing(context) {
+    // Check if telemetry is enabled
+    if (!vscode.env.isTelemetryEnabled) {
+        return;
+    }
+    // Simple activation ping - replace with actual endpoint
+    // const telemetryUrl = 'https://your-telemetry-endpoint.com/activate';
+    // try {
+    //     await fetch(telemetryUrl, { method: 'POST' });
+    // } catch (e) {
+    //     // Ignore telemetry errors
+    // }
+    //     await fetch(telemetryUrl, { method: 'POST' });
+    // } catch (e) {
+    //     // Ignore telemetry errors
+    // }
+    logger_1.DriftLogger.log('Telemetry: Activation ping sent (simulated)');
+}
+//# sourceMappingURL=extension.js.map

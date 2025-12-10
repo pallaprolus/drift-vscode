@@ -3,6 +3,7 @@ import { WorkspaceScanner } from './analyzers/workspaceScanner';
 import { DriftDashboardProvider } from './providers/dashboardProvider';
 import { DecorationProvider } from './providers/decorationProvider';
 import { DriftCodeLensProvider } from './providers/codeLensProvider';
+import { QuickFixProvider } from './providers/quickFixProvider';
 import { StateManager } from './providers/stateManager';
 import { DriftConfig, DocCodePair } from './models/types';
 import { debounce } from './utils/helpers';
@@ -58,6 +59,27 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
     // Register event listeners
     registerEventListeners(context, config);
+
+    // Register QuickFix provider
+    const quickFixProvider = new QuickFixProvider(scanner);
+    const quickFixSelector = [
+        { language: 'typescript', scheme: 'file' },
+        { language: 'javascript', scheme: 'file' },
+        { language: 'typescriptreact', scheme: 'file' },
+        { language: 'javascriptreact', scheme: 'file' },
+        { language: 'python', scheme: 'file' },
+        { language: 'java', scheme: 'file' },
+        { language: 'go', scheme: 'file' },
+        { language: 'rust', scheme: 'file' }
+    ];
+
+    context.subscriptions.push(
+        vscode.languages.registerCodeActionsProvider(
+            quickFixSelector,
+            quickFixProvider,
+            { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] }
+        )
+    );
 
     // Add disposables
     context.subscriptions.push(
