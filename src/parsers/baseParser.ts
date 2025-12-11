@@ -17,9 +17,9 @@ import { hashContent, generatePairId } from '../utils/helpers';
 export abstract class BaseParser implements LanguageParser {
     abstract languageId: string;
     abstract fileExtensions: string[];
-    
+
     abstract parseDocCodePairs(document: vscode.TextDocument): Promise<DocCodePair[]>;
-    
+
     /**
      * Parse documentation content based on doc type
      */
@@ -38,12 +38,12 @@ export abstract class BaseParser implements LanguageParser {
                 return this.parseGenericComment(content);
         }
     }
-    
+
     /**
      * Extract code signature - to be implemented by subclasses
      */
     abstract extractCodeSignature(content: string, range: vscode.Range): CodeSignature;
-    
+
     /**
      * Parse JSDoc/JavaDoc style documentation
      */
@@ -53,20 +53,20 @@ export abstract class BaseParser implements LanguageParser {
             params: [],
             tags: []
         };
-        
+
         // Remove comment markers
         const cleanContent = content
             .replace(/^\/\*\*?/gm, '')
             .replace(/\*\/$/gm, '')
             .replace(/^\s*\*\s?/gm, '')
             .trim();
-        
+
         const lines = cleanContent.split('\n');
         const descriptionLines: string[] = [];
-        
+
         for (const line of lines) {
             const trimmed = line.trim();
-            
+
             // Parse @param
             const paramMatch = trimmed.match(/@param\s+(?:\{([^}]*)\}\s+)?(\w+)\s*(.*)/);
             if (paramMatch) {
@@ -78,7 +78,7 @@ export abstract class BaseParser implements LanguageParser {
                 });
                 continue;
             }
-            
+
             // Parse @returns/@return
             const returnMatch = trimmed.match(/@returns?\s+(?:\{([^}]*)\}\s*)?(.*)/);
             if (returnMatch) {
@@ -88,7 +88,7 @@ export abstract class BaseParser implements LanguageParser {
                 };
                 continue;
             }
-            
+
             // Parse @throws/@exception
             const throwsMatch = trimmed.match(/@(?:throws|exception)\s+(?:\{([^}]*)\}\s*)?(.*)/);
             if (throwsMatch) {
@@ -99,21 +99,21 @@ export abstract class BaseParser implements LanguageParser {
                 });
                 continue;
             }
-            
+
             // Parse @deprecated
             const deprecatedMatch = trimmed.match(/@deprecated\s*(.*)/);
             if (deprecatedMatch) {
                 result.deprecated = deprecatedMatch[1] || 'Deprecated';
                 continue;
             }
-            
+
             // Parse @since
             const sinceMatch = trimmed.match(/@since\s+(.*)/);
             if (sinceMatch) {
                 result.since = sinceMatch[1];
                 continue;
             }
-            
+
             // Parse @example
             const exampleMatch = trimmed.match(/@example\s*(.*)/);
             if (exampleMatch) {
@@ -121,7 +121,7 @@ export abstract class BaseParser implements LanguageParser {
                 result.examples.push(exampleMatch[1] || '');
                 continue;
             }
-            
+
             // Parse other tags
             const tagMatch = trimmed.match(/@(\w+)\s*(.*)/);
             if (tagMatch) {
@@ -131,17 +131,17 @@ export abstract class BaseParser implements LanguageParser {
                 });
                 continue;
             }
-            
+
             // Add to description if not a tag
             if (!trimmed.startsWith('@')) {
                 descriptionLines.push(trimmed);
             }
         }
-        
+
         result.description = descriptionLines.join(' ').trim();
         return result;
     }
-    
+
     /**
      * Parse Python docstring style documentation
      */
@@ -151,19 +151,25 @@ export abstract class BaseParser implements LanguageParser {
             params: [],
             tags: []
         };
-        
+
         // Remove docstring quotes
         const cleanContent = content
             .replace(/^['"`]{3}/gm, '')
             .replace(/['"`]{3}$/gm, '')
             .trim();
-        
+
         const sections = cleanContent.split(/\n\s*\n/);
-        
+
         if (sections.length > 0) {
             result.description = sections[0].trim();
         }
-        
+
+        // Try Sphinx style first/also
+        this.parseSphinxStyle(cleanContent, result);
+
+        // Try NumPy style
+        this.parseNumPyStyle(cleanContent, result);
+
         // Parse Args/Parameters section
         const argsPattern = /(?:Args|Parameters|Params):\s*\n((?:\s+\w+.*\n?)+)/gi;
         const argsMatch = cleanContent.match(argsPattern);
@@ -179,7 +185,7 @@ export abstract class BaseParser implements LanguageParser {
                 });
             }
         }
-        
+
         // Parse Returns section
         const returnsPattern = /Returns:\s*\n?\s*(?:(\w+):\s*)?(.+)/i;
         const returnsMatch = cleanContent.match(returnsPattern);
@@ -189,7 +195,7 @@ export abstract class BaseParser implements LanguageParser {
                 description: returnsMatch[2] || ''
             };
         }
-        
+
         // Parse Raises section
         const raisesPattern = /Raises:\s*\n((?:\s+\w+.*\n?)+)/gi;
         const raisesMatch = cleanContent.match(raisesPattern);
@@ -204,10 +210,167 @@ export abstract class BaseParser implements LanguageParser {
                 });
             }
         }
-        
+
         return result;
     }
-    
+
+    /**
+     * Parse Sphinx-style docstrings (:param, :return, etc.)
+     * Returns true if Sphinx style was detected and parsed
+     */
+    private parseSphinxStyle(cleanContent: string, result: ParsedDoc): boolean {
+        let foundSphinx = false;
+        const lines = cleanContent.split('\n');
+
+        for (const line of lines) {
+            const trimmed = line.trim();
+
+            // :param [type] name: description
+            const paramMatch = trimmed.match(/^:param\s+(.+?):\s*(.*)$/);
+            if (paramMatch) {
+                foundSphinx = true;
+                const paramSig = paramMatch[1].trim();
+                const desc = paramMatch[2] || '';
+
+                // Extract type/name from the signature part
+                // Case 1: "name"
+                // Case 2: "type name"
+                const parts = paramSig.split(/\s+/);
+                const name = parts.pop() || ''; // Last part is name
+                const type = parts.join(' ');   // Rest is type
+
+                if (name) {
+                    // Check if already exists (Google style mixed with Sphinx?)
+                    const existing = result.params.find(p => p.name === name);
+                    if (!existing) {
+                        result.params.push({
+                            name,
+                            type,
+                            description: desc,
+                            isOptional: false
+                        });
+                    }
+                }
+                continue;
+            }
+
+            // :type name: type
+            const typeMatch = trimmed.match(/^:type\s+(\w+):\s*(.*)$/);
+            if (typeMatch) {
+                foundSphinx = true;
+                const name = typeMatch[1];
+                const type = typeMatch[2];
+
+                // Find existing param to update logic
+                const existing = result.params.find(p => p.name === name);
+                if (existing) {
+                    existing.type = type;
+                }
+                continue;
+            }
+
+            // :return: description or :returns:
+            const returnMatch = trimmed.match(/^:(?:return|returns):\s*(.*)$/);
+            if (returnMatch) {
+                foundSphinx = true;
+                if (!result.returns) {
+                    result.returns = { type: '', description: '' };
+                }
+                result.returns.description = returnMatch[1];
+                continue;
+            }
+
+            // :rtype: type
+            const rtypeMatch = trimmed.match(/^:rtype:\s*(.*)$/);
+            if (rtypeMatch) {
+                foundSphinx = true;
+                if (!result.returns) {
+                    result.returns = { type: '', description: '' };
+                }
+                result.returns.type = rtypeMatch[1];
+                continue;
+            }
+        }
+
+        return foundSphinx;
+    }
+
+    /**
+     * Parse NumPy-style docstrings (Parameters\n----------)
+     */
+    private parseNumPyStyle(cleanContent: string, result: ParsedDoc): void {
+        const lines = cleanContent.split('\n');
+        let currentSection = '';
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmed = line.trim();
+
+            // Detect section headers
+            if (i + 1 < lines.length) {
+                const nextLine = lines[i + 1].trim();
+                // Check for underline (at least 3 dashes) matching roughly the header length? 
+                // NumPy usually strictly requires dashes.
+                if (nextLine.startsWith('---') && nextLine.length >= 3) {
+                    currentSection = trimmed.toLowerCase();
+                    i++; // Skip the underline
+                    continue;
+                }
+            }
+
+            if (currentSection === 'parameters') {
+                // Parse parameter: name : type
+                // description continues on next indented lines
+                const paramMatch = trimmed.match(/^(\w+)\s*:\s*(.+)$/);
+                if (paramMatch) {
+                    const name = paramMatch[1];
+                    const typeInfo = paramMatch[2];
+
+                    // Check for optional
+                    const isOptional = typeInfo.toLowerCase().includes('optional');
+                    const cleanType = typeInfo.replace(/,\s*optional/i, '').trim();
+
+                    // Avoid duplicates
+                    if (!result.params.some(p => p.name === name)) {
+                        result.params.push({
+                            name,
+                            type: cleanType,
+                            description: '', // TODO: Extract description from following lines
+                            isOptional
+                        });
+                    }
+                }
+            } else if (currentSection === 'returns') {
+                // Parse returns: type
+                // OR name : type
+                if (trimmed && !result.returns) {
+                    const returnMatch = trimmed.match(/^(?:(\w+)\s*:\s*)?(.+)$/);
+                    if (returnMatch) {
+                        // heuristic: if colon exists, part 2 is type. If no colon, entire string might be type or desc?
+                        // NumPy returns: "type" or "name : type"
+                        const hasColon = trimmed.includes(':');
+                        if (hasColon) {
+                            result.returns = {
+                                type: returnMatch[2],
+                                description: ''
+                            };
+                        } else {
+                            result.returns = {
+                                type: trimmed,
+                                description: ''
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+
     /**
      * Parse Go-style documentation (comment blocks before declarations)
      */
@@ -217,22 +380,22 @@ export abstract class BaseParser implements LanguageParser {
             params: [],
             tags: []
         };
-        
+
         // Go docs are simple comment lines
         const cleanContent = content
             .replace(/^\/\/\s?/gm, '')
             .trim();
-        
+
         result.description = cleanContent;
-        
+
         // Go doesn't have formal param documentation, but we can extract
         // mentioned parameter names
         const words = cleanContent.split(/\s+/);
         // Parameters are often mentioned in the description
-        
+
         return result;
     }
-    
+
     /**
      * Parse Rust doc comments (//! or ///)
      */
@@ -242,22 +405,22 @@ export abstract class BaseParser implements LanguageParser {
             params: [],
             tags: []
         };
-        
+
         const cleanContent = content
             .replace(/^\/\/[\/!]\s?/gm, '')
             .trim();
-        
+
         const lines = cleanContent.split('\n');
         const descriptionLines: string[] = [];
-        
+
         for (const line of lines) {
             const trimmed = line.trim();
-            
+
             // Parse # Arguments section
             if (trimmed === '# Arguments') {
                 continue;
             }
-            
+
             // Parse argument items
             const argMatch = trimmed.match(/^\*\s+`(\w+)`\s*-\s*(.*)$/);
             if (argMatch) {
@@ -268,25 +431,25 @@ export abstract class BaseParser implements LanguageParser {
                 });
                 continue;
             }
-            
+
             // Parse # Returns section
             if (trimmed === '# Returns') {
                 continue;
             }
-            
+
             // Parse # Examples section
             if (trimmed === '# Examples') {
                 if (!result.examples) result.examples = [];
                 continue;
             }
-            
+
             descriptionLines.push(trimmed);
         }
-        
+
         result.description = descriptionLines.join(' ').trim();
         return result;
     }
-    
+
     /**
      * Parse generic comment without specific format
      */
@@ -298,14 +461,14 @@ export abstract class BaseParser implements LanguageParser {
             .replace(/^\s*\*\s?/gm, '')
             .replace(/^#\s?/gm, '')
             .trim();
-        
+
         return {
             description: cleanContent,
             params: [],
             tags: []
         };
     }
-    
+
     /**
      * Create a DocCodePair from parsed data
      */
@@ -333,7 +496,7 @@ export abstract class BaseParser implements LanguageParser {
             isReviewed: false
         };
     }
-    
+
     /**
      * Helper to create a basic code signature
      */
