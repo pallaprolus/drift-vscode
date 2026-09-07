@@ -91,6 +91,8 @@ Or install from the command line:
 code --install-extension pallaprolus.drift
 ```
 
+Drift is also on [Open VSX](https://open-vsx.org/extension/pallaprolus/drift) for Cursor, VSCodium, and other editors that use the Open VSX registry.
+
 ## Usage
 
 ### Scan Your Workspace
