@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { WorkspaceScanner } from '../analyzers/workspaceScanner';
-import { DocCodePair, DriftReason } from '../models/types';
+import { DocCodePair } from '../models/types';
 
 /**
  * Provides Code Actions (Quick Fixes) for detected drift issues
@@ -15,8 +15,8 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
     provideCodeActions(
         document: vscode.TextDocument,
         range: vscode.Range | vscode.Selection,
-        context: vscode.CodeActionContext,
-        token: vscode.CancellationToken
+        _context: vscode.CodeActionContext,
+        _token: vscode.CancellationToken
     ): vscode.ProviderResult<(vscode.Command | vscode.CodeAction)[]> {
         // Get drift results for this file
         const pairs = this.scanner.getResultsForFile(document.uri.fsPath);
@@ -44,7 +44,7 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
                 if (match) {
                     const paramName = match[1];
                     const action = this.createAddParamAction(document, pair, paramName);
-                    if (action) actions.push(action);
+                    if (action) {actions.push(action);}
                 }
             } else if (reason.message.includes('not found in code')) {
                 // Handle "Documented parameter 'x' not found in code"
@@ -52,12 +52,12 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
                 if (match) {
                     const paramName = match[1];
                     const action = this.createRemoveParamAction(document, pair, paramName);
-                    if (action) actions.push(action);
+                    if (action) {actions.push(action);}
                 }
             } else if (reason.message.includes('Return type')) {
                 // Sync return type
                 const action = this.createSyncReturnTypeAction(document, pair);
-                if (action) actions.push(action);
+                if (action) {actions.push(action);}
             }
         }
 
@@ -73,7 +73,6 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
 
         // Determine where to insert
         // Simple heuristic: append to end of doc block, before the closing */ or """
-        const docLines = pair.docContent.split('\n');
         const lastLineIndex = pair.docRange.end.line;
         const lastLineText = document.lineAt(lastLineIndex).text;
 
@@ -172,7 +171,7 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
     /**
      * Create action to sync return type
      */
-    private createSyncReturnTypeAction(document: vscode.TextDocument, pair: DocCodePair): vscode.CodeAction | null {
+    private createSyncReturnTypeAction(_document: vscode.TextDocument, _pair: DocCodePair): vscode.CodeAction | null {
         // Placeholder for return type sync
         return null;
     }

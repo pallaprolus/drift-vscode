@@ -20,7 +20,7 @@ export class JavaParser extends BaseParser {
 
         // Regex for method declaration (simplified)
         // (public|private|protected|static|final|synchronized|abstract|default|native)* type name(params) ... {?
-        const methodRegex = /^(?:[\w\[\]<>\.]+\s+)*[\w\[\]<>\.]+\s+(\w+)\s*\(/;
+        const methodRegex = /^(?:[\w[\]<>.]+\s+)*[\w[\]<>.]+\s+(\w+)\s*\(/;
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -61,7 +61,6 @@ export class JavaParser extends BaseParser {
 
                 if (methodMatch && !isClass) {
                     const docContent = currentDocLines.join('\n');
-                    const docEndLine = i - 1; // Assuming adjacent (skipping annotations logic logic simplified)
                     // Better: docEndLine was where we closed the comment.
                     // But we didn't track it. Let's recalculate based on lines length.
                     // Actually, we should track where the comment ended.
@@ -114,14 +113,14 @@ export class JavaParser extends BaseParser {
     /**
      * Extract signature from Java method definition
      */
-    extractCodeSignature(content: string, range: vscode.Range): CodeSignature {
+    extractCodeSignature(content: string, _range: vscode.Range): CodeSignature {
         const signature: CodeSignature = {
             name: '',
             type: CodeType.Function,
             parameters: [],
             modifiers: [],
             hash: ''
-        }
+        };
 
         // Modifiers
         const modifiersList = ['public', 'private', 'protected', 'static', 'final', 'abstract', 'synchronized'];
@@ -137,7 +136,6 @@ export class JavaParser extends BaseParser {
         // Discard modifiers matches
 
         // Remove modifiers to simplify
-        let clean = content;
         // This is naive string replacement, but sufficient for simple MVP
         // Better to use regex to capture groups
 
@@ -161,7 +159,7 @@ export class JavaParser extends BaseParser {
                 const paramParts = paramsStr.split(',');
                 for (const part of paramParts) {
                     const trimmed = part.trim();
-                    if (!trimmed) continue;
+                    if (!trimmed) {continue;}
 
                     // Type Name
                     // final String s

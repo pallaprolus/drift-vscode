@@ -125,7 +125,7 @@ export class ParserRegistry {
      */
     private getFileExtension(filePath: string): string {
         const lastDot = filePath.lastIndexOf('.');
-        if (lastDot === -1) return '';
+        if (lastDot === -1) {return '';}
         return filePath.slice(lastDot).toLowerCase();
     }
 }

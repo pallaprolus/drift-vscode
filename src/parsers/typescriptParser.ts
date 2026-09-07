@@ -155,7 +155,7 @@ export class TypeScriptParser extends BaseParser {
         return null;
     }
     
-    extractCodeSignature(content: string, range: vscode.Range): CodeSignature {
+    extractCodeSignature(content: string, _range: vscode.Range): CodeSignature {
         const firstLine = content.split('\n')[0].trim();
         
         // Extract function/method name and parameters
@@ -271,7 +271,7 @@ export class TypeScriptParser extends BaseParser {
     private parseParameters(paramsStr: string): ParameterInfo[] {
         const params: ParameterInfo[] = [];
         
-        if (!paramsStr.trim()) return params;
+        if (!paramsStr.trim()) {return params;}
         
         // Split by comma, but be careful of nested types
         let depth = 0;
@@ -311,7 +311,7 @@ export class TypeScriptParser extends BaseParser {
      */
     private parseParameter(paramStr: string): ParameterInfo | null {
         const trimmed = paramStr.trim();
-        if (!trimmed) return null;
+        if (!trimmed) {return null;}
         
         const isRest = trimmed.startsWith('...');
         const withoutRest = isRest ? trimmed.slice(3) : trimmed;

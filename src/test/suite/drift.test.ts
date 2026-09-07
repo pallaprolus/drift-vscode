@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import * as path from 'path';
 
 suite('Integration Test: Drift Detection', () => {
     vscode.window.showInformationMessage('Start all tests.');
@@ -56,7 +55,7 @@ function test(a: string) {}
         const diagnostics = vscode.languages.getDiagnostics(doc.uri);
 
         // We expect a warning about parameter mismatch
-        const hasDriftWarning = diagnostics.some(d =>
+        const _hasDriftWarning = diagnostics.some(d =>
             d.message.includes('Parameter') && d.message.includes('renamed') ||
             d.message.includes('mismatch')
         );

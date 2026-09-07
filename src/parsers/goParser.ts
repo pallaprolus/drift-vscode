@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { BaseParser } from './baseParser';
-import { DocCodePair, DocType, CodeSignature, CodeType } from '../models/types';
+import { DocCodePair, DocType, CodeSignature, CodeType, ParameterInfo } from '../models/types';
 
 export class GoParser extends BaseParser {
     languageId = 'go';
@@ -40,8 +40,6 @@ export class GoParser extends BaseParser {
             // Check for function declaration
             const funcMatch = trimmedLine.match(funcRegex);
             if (funcMatch && currentDocLines.length > 0) {
-                const name = funcMatch[1];
-                const params = funcMatch[2];
                 // Go docs usually don't have blank lines between doc and function
                 // But we'll allow it if strictly adjacent for now
 
@@ -82,14 +80,14 @@ export class GoParser extends BaseParser {
     /**
      * Extract signature from Go function definition
      */
-    extractCodeSignature(content: string, range: vscode.Range): CodeSignature {
+    extractCodeSignature(content: string, _range: vscode.Range): CodeSignature {
         const signature: CodeSignature = {
             name: '',
             type: CodeType.Function,
             parameters: [],
             modifiers: [],
             hash: ''
-        }
+        };
 
         // Parse: func Name(param1 type1, param2 type2) (retType)
         const funcMatch = content.trim().match(/^func\s+(\w+)\s*\((.*?)\)(?:\s*(.*))?\s*\{?$/);
@@ -103,7 +101,6 @@ export class GoParser extends BaseParser {
                 // Determine split strategy - Go params can be tricky: "a, b int, c string"
                 // For MVP, simplistic comma splitting might fail on complex types like func(int, int)
                 // But let's try a basic approach first and assume simple types
-                const paramParts = paramsStr.split(',');
 
                 // Go allows "x, y int" -> both are int. 
                 // We need to parse backwards or handle groups.
@@ -113,7 +110,6 @@ export class GoParser extends BaseParser {
                 // Or simplified: just extract names if possible.
 
                 // Let's iterate and clean
-                let currentNames: string[] = [];
 
                 // If it contains only types (no names), it's harder, but Go funcs usually have named params
 
@@ -132,8 +128,8 @@ export class GoParser extends BaseParser {
         return signature;
     }
 
-    private parseGoParams(paramsStr: string): any[] {
-        const params: any[] = [];
+    private parseGoParams(paramsStr: string): ParameterInfo[] {
+        const params: ParameterInfo[] = [];
         // Handle: a, b int, c string
         // Split by comma, but careful of func/interface types which might contain commas
         // For MVP, assuming simple types
@@ -161,7 +157,9 @@ export class GoParser extends BaseParser {
                 for (const name of pendingNames) {
                     params.push({
                         name: name,
-                        type: type
+                        type: type,
+                        isOptional: false,
+                        isRest: false
                     });
                 }
                 pendingNames = [];

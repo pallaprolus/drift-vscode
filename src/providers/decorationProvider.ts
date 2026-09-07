@@ -154,9 +154,9 @@ export class DecorationProvider {
      * Get severity level from drift score
      */
     private getSeverityFromScore(score: number): DriftSeverity {
-        if (score >= 0.8) return DriftSeverity.Critical;
-        if (score >= 0.6) return DriftSeverity.High;
-        if (score >= 0.4) return DriftSeverity.Medium;
+        if (score >= 0.8) {return DriftSeverity.Critical;}
+        if (score >= 0.6) {return DriftSeverity.High;}
+        if (score >= 0.4) {return DriftSeverity.Medium;}
         return DriftSeverity.Low;
     }
 
@@ -211,7 +211,7 @@ export class DecorationProvider {
     /**
      * Get path to gutter icon
      */
-    private getIconPath(name: string): vscode.Uri {
+    private getIconPath(_name: string): vscode.Uri {
         // For now, return a placeholder - in production, this would be an actual icon file
         return vscode.Uri.parse(`data:image/svg+xml,${encodeURIComponent(
             `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">

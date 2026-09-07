@@ -5,14 +5,10 @@ import {
     DriftSeverity,
     ParsedDoc,
     CodeSignature,
-    DocType,
     LanguageParser
 } from '../models/types';
 import {
-    calculateSimilarity,
     extractIdentifiers,
-    extractDocParamNames,
-    extractDocReturnType,
     findClosestMatch,
     normalizeWhitespace
 } from '../utils/helpers';
@@ -74,7 +70,7 @@ export class DriftAnalyzer {
             const paramName = docParam.name.toLowerCase();
 
             // Skip self/cls for Python
-            if (['self', 'cls'].includes(paramName)) continue;
+            if (['self', 'cls'].includes(paramName)) {continue;}
 
             if (!codeParamNames.includes(paramName)) {
                 // Check if it might be renamed
@@ -103,7 +99,7 @@ export class DriftAnalyzer {
             const paramName = codeParam.name.toLowerCase();
 
             // Skip self/cls for Python
-            if (['self', 'cls'].includes(paramName)) continue;
+            if (['self', 'cls'].includes(paramName)) {continue;}
 
             if (!docParamNames.includes(paramName)) {
                 // Only flag as issue if this seems like a substantive parameter
@@ -182,7 +178,7 @@ export class DriftAnalyzer {
     /**
      * Analyze description for references to code elements that may have changed
      */
-    private analyzeDescription(doc: ParsedDoc, codeContent: string, signature: CodeSignature): DriftReason[] {
+    private analyzeDescription(doc: ParsedDoc, codeContent: string, _signature: CodeSignature): DriftReason[] {
         const reasons: DriftReason[] = [];
 
         // Extract identifiers from the code
@@ -196,7 +192,7 @@ export class DriftAnalyzer {
             const refLower = ref.toLowerCase();
 
             // Skip common words and very short references
-            if (ref.length <= 2) continue;
+            if (ref.length <= 2) {continue;}
 
             // Check if this reference exists in the code
             if (!codeIdentifiers.has(refLower)) {
@@ -249,7 +245,7 @@ export class DriftAnalyzer {
      */
     private typesMatch(docType: string, codeType: string): boolean {
         // Direct match
-        if (docType === codeType) return true;
+        if (docType === codeType) {return true;}
 
         // Common type aliases
         const typeAliases: Record<string, string[]> = {
@@ -280,7 +276,7 @@ export class DriftAnalyzer {
      * Calculate overall drift score from reasons
      */
     private calculateDriftScore(reasons: DriftReason[]): number {
-        if (reasons.length === 0) return 0;
+        if (reasons.length === 0) {return 0;}
 
         let score = 0;
 

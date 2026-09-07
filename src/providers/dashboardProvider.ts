@@ -72,9 +72,9 @@ export class DriftTreeItem extends vscode.TreeItem {
     }
     
     private static getSeverityFromScore(score: number): DriftSeverity {
-        if (score >= 0.8) return DriftSeverity.Critical;
-        if (score >= 0.6) return DriftSeverity.High;
-        if (score >= 0.4) return DriftSeverity.Medium;
+        if (score >= 0.8) {return DriftSeverity.Critical;}
+        if (score >= 0.6) {return DriftSeverity.High;}
+        if (score >= 0.4) {return DriftSeverity.Medium;}
         return DriftSeverity.Low;
     }
     
@@ -139,7 +139,6 @@ export class FileGroupItem extends vscode.TreeItem {
         public readonly workspaceFolder: string
     ) {
         const relativePath = path.relative(workspaceFolder, filePath);
-        const maxSeverity = Math.max(...pairs.map(p => p.driftScore));
         
         super(relativePath, vscode.TreeItemCollapsibleState.Expanded);
         

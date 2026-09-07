@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { QuickFixProvider } from '../../../providers/quickFixProvider';
 import { WorkspaceScanner } from '../../../analyzers/workspaceScanner';
-import { DocCodePair, DriftReason, DriftSeverity, CodeType, DocType, CodeSignature, DriftType } from '../../../models/types';
+import { DocCodePair, DriftSeverity, CodeType, DocType, DriftType } from '../../../models/types';
 
 suite('QuickFixProvider Test Suite', () => {
     let provider: QuickFixProvider;
@@ -48,7 +48,7 @@ suite('QuickFixProvider Test Suite', () => {
 
         // Mock document for JSDoc
         mockDocument.lineAt = (line: number) => {
-            if (line === 5) return { text: ' */' }; // simplified end
+            if (line === 5) {return { text: ' */' };} // simplified end
             return { text: '' };
         };
 

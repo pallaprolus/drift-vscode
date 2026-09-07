@@ -15,11 +15,11 @@ class MockParser implements LanguageParser {
     languageId = 'mock';
     fileExtensions = ['.mock'];
 
-    parseDocCodePairs(document: any): Promise<DocCodePair[]> {
+    parseDocCodePairs(_document: any): Promise<DocCodePair[]> {
         throw new Error('Method not implemented.');
     }
 
-    parseDocumentation(content: string, docType: DocType): ParsedDoc {
+    parseDocumentation(content: string, _docType: DocType): ParsedDoc {
         // Simple JSON parsing for testing
         try {
             return JSON.parse(content);
@@ -32,7 +32,7 @@ class MockParser implements LanguageParser {
         }
     }
 
-    extractCodeSignature(content: string, range: any): CodeSignature {
+    extractCodeSignature(_content: string, _range: any): CodeSignature {
         throw new Error('Method not implemented.');
     }
 }

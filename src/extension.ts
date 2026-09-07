@@ -319,7 +319,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
 /**
  * Register event listeners
  */
-function registerEventListeners(context: vscode.ExtensionContext, config: DriftConfig): void {
+function registerEventListeners(context: vscode.ExtensionContext, _config: DriftConfig): void {
     // Debounced document change handler
     const debouncedScan = debounce(async (document: vscode.TextDocument) => {
         const pairs = await scanner.scanDocument(document);
@@ -475,7 +475,7 @@ export async function deactivate(): Promise<void> {
 /**
  * Check if welcome message should be shown
  */
-async function checkWelcomeMessage(context: vscode.ExtensionContext): Promise<void> {
+export async function checkWelcomeMessage(context: vscode.ExtensionContext): Promise<void> {
     const hasShownWelcome = context.globalState.get<boolean>('drift.hasShownWelcome', false);
 
     if (!hasShownWelcome) {
@@ -496,7 +496,7 @@ async function checkWelcomeMessage(context: vscode.ExtensionContext): Promise<vo
 /**
  * Send activation ping (telemetry)
  */
-async function sendActivationPing(context: vscode.ExtensionContext): Promise<void> {
+async function sendActivationPing(_context: vscode.ExtensionContext): Promise<void> {
     // Check if telemetry is enabled
     if (!vscode.env.isTelemetryEnabled) {
         return;

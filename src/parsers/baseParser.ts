@@ -5,8 +5,6 @@ import {
     ParsedDoc,
     CodeSignature,
     CodeType,
-    ParameterInfo,
-    DocParam,
     LanguageParser
 } from '../models/types';
 import { hashContent, generatePairId } from '../utils/helpers';
@@ -92,7 +90,7 @@ export abstract class BaseParser implements LanguageParser {
             // Parse @throws/@exception
             const throwsMatch = trimmed.match(/@(?:throws|exception)\s+(?:\{([^}]*)\}\s*)?(.*)/);
             if (throwsMatch) {
-                if (!result.throws) result.throws = [];
+                if (!result.throws) {result.throws = [];}
                 result.throws.push({
                     type: throwsMatch[1],
                     description: throwsMatch[2] || ''
@@ -117,7 +115,7 @@ export abstract class BaseParser implements LanguageParser {
             // Parse @example
             const exampleMatch = trimmed.match(/@example\s*(.*)/);
             if (exampleMatch) {
-                if (!result.examples) result.examples = [];
+                if (!result.examples) {result.examples = [];}
                 result.examples.push(exampleMatch[1] || '');
                 continue;
             }
@@ -390,7 +388,6 @@ export abstract class BaseParser implements LanguageParser {
 
         // Go doesn't have formal param documentation, but we can extract
         // mentioned parameter names
-        const words = cleanContent.split(/\s+/);
         // Parameters are often mentioned in the description
 
         return result;
@@ -407,7 +404,7 @@ export abstract class BaseParser implements LanguageParser {
         };
 
         const cleanContent = content
-            .replace(/^\/\/[\/!]\s?/gm, '')
+            .replace(/^\/\/[/!]\s?/gm, '')
             .trim();
 
         const lines = cleanContent.split('\n');
@@ -439,7 +436,7 @@ export abstract class BaseParser implements LanguageParser {
 
             // Parse # Examples section
             if (trimmed === '# Examples') {
-                if (!result.examples) result.examples = [];
+                if (!result.examples) {result.examples = [];}
                 continue;
             }
 

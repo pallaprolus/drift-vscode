@@ -23,11 +23,11 @@ class MockTextDocument {
         return this.content;
     }
 
-    positionAt(offset: number): vscode.Position {
+    positionAt(_offset: number): vscode.Position {
         return new vscode.Position(0, 0);
     }
 
-    offsetAt(position: vscode.Position): number {
+    offsetAt(_position: vscode.Position): number {
         return 0;
     }
 
@@ -35,7 +35,7 @@ class MockTextDocument {
         return range;
     }
 
-    lineAt(line: number | vscode.Position): vscode.TextLine {
+    lineAt(_line: number | vscode.Position): vscode.TextLine {
         return {
             lineNumber: 0,
             text: '',
@@ -55,7 +55,7 @@ suite('PythonParser Tests', () => {
     });
 
     test('should identify Python files', () => {
-        const doc = {
+        const _doc = {
             languageId: 'python',
             fileName: 'test.py'
         };

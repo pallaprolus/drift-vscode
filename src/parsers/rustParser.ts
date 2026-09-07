@@ -17,7 +17,7 @@ export class RustParser extends BaseParser {
         // Regex to match Rust function/method declarations
         // fn name<T>(params) -> RetType where .. {
         // public fn name ... ? Rust uses pub
-        const fnRegex = /^(?:pub(?:\([^)]+\))?\s+)?(?:unsafe\s+|async\s+|const\s+|extern\s+(?:\"[^\"]+\"\s+)?)*fn\s+(\w+)/;
+        const fnRegex = /^(?:pub(?:\([^)]+\))?\s+)?(?:unsafe\s+|async\s+|const\s+|extern\s+(?:"[^"]+"\s+)?)*fn\s+(\w+)/;
 
         // Regex for comments (matched by BaseParser.parseRustDocStyle)
         // /// or //!
@@ -106,14 +106,14 @@ export class RustParser extends BaseParser {
     /**
      * Extract signature from Rust function definition
      */
-    extractCodeSignature(content: string, range: vscode.Range): CodeSignature {
+    extractCodeSignature(content: string, _range: vscode.Range): CodeSignature {
         const signature: CodeSignature = {
             name: '',
             type: CodeType.Function,
             parameters: [],
             modifiers: [],
             hash: ''
-        }
+        };
 
         // Basic extraction
         const fnMatch = content.match(/fn\s+(\w+)/);
@@ -122,9 +122,9 @@ export class RustParser extends BaseParser {
         }
 
         // Modifiers
-        if (content.match(/\bpub\b/)) signature.modifiers.push('public');
-        if (content.match(/\basync\b/)) signature.modifiers.push('async');
-        if (content.match(/\bunsafe\b/)) signature.modifiers.push('unsafe');
+        if (content.match(/\bpub\b/)) {signature.modifiers.push('public');}
+        if (content.match(/\basync\b/)) {signature.modifiers.push('async');}
+        if (content.match(/\bunsafe\b/)) {signature.modifiers.push('unsafe');}
 
         // Parameters extraction - simplified
         const paramMatch = content.match(/\((.*?)\)/);
@@ -133,7 +133,7 @@ export class RustParser extends BaseParser {
             const parts = paramMatch[1].split(',');
             for (const part of parts) {
                 const trimmed = part.trim();
-                if (!trimmed) continue;
+                if (!trimmed) {continue;}
 
                 // name: type
                 const colIndex = trimmed.indexOf(':');

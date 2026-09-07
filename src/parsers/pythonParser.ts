@@ -133,10 +133,10 @@ export class PythonParser extends BaseParser {
      * Get the docstring quote style if the line starts with one
      */
     private getDocstringQuote(line: string): string | null {
-        if (line.startsWith('"""')) return '"""';
-        if (line.startsWith("'''")) return "'''";
-        if (line.startsWith('"')) return '"';
-        if (line.startsWith("'")) return "'";
+        if (line.startsWith('"""')) {return '"""';}
+        if (line.startsWith("'''")) {return "'''";}
+        if (line.startsWith('"')) {return '"';}
+        if (line.startsWith("'")) {return "'";}
         return null;
     }
 
@@ -188,7 +188,7 @@ export class PythonParser extends BaseParser {
         return indent;
     }
 
-    extractCodeSignature(content: string, range: vscode.Range): CodeSignature {
+    extractCodeSignature(content: string, _range: vscode.Range): CodeSignature {
         const lines = content.split('\n');
         const firstLine = lines[0].trim();
 
@@ -294,7 +294,7 @@ export class PythonParser extends BaseParser {
     private parseParameters(paramsStr: string): ParameterInfo[] {
         const params: ParameterInfo[] = [];
 
-        if (!paramsStr.trim()) return params;
+        if (!paramsStr.trim()) {return params;}
 
         // Split by comma, respecting nested brackets
         let depth = 0;
@@ -334,7 +334,7 @@ export class PythonParser extends BaseParser {
      */
     private parseParameter(paramStr: string): ParameterInfo | null {
         const trimmed = paramStr.trim();
-        if (!trimmed) return null;
+        if (!trimmed) {return null;}
 
         // Skip self, cls, *args, **kwargs style parameters for comparison purposes
         // but still track them

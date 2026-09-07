@@ -46,7 +46,7 @@ export class StateManager {
      * Load state from disk
      */
     private async loadState(): Promise<void> {
-        if (!this.stateFilePath) return;
+        if (!this.stateFilePath) {return;}
 
         try {
             if (fs.existsSync(this.stateFilePath)) {
@@ -74,7 +74,7 @@ export class StateManager {
      * Save state to disk
      */
     async saveState(): Promise<void> {
-        if (!this.stateFilePath) return;
+        if (!this.stateFilePath) {return;}
 
         try {
             const stateDir = path.dirname(this.stateFilePath);

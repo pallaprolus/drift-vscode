@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
+exports.checkWelcomeMessage = checkWelcomeMessage;
 const vscode = __importStar(require("vscode"));
 const workspaceScanner_1 = require("./analyzers/workspaceScanner");
 const dashboardProvider_1 = require("./providers/dashboardProvider");
@@ -267,7 +268,7 @@ function registerCommands(context) {
 /**
  * Register event listeners
  */
-function registerEventListeners(context, config) {
+function registerEventListeners(context, _config) {
     // Debounced document change handler
     const debouncedScan = (0, helpers_1.debounce)(async (document) => {
         const pairs = await scanner.scanDocument(document);
@@ -401,7 +402,7 @@ async function checkWelcomeMessage(context) {
 /**
  * Send activation ping (telemetry)
  */
-async function sendActivationPing(context) {
+async function sendActivationPing(_context) {
     // Check if telemetry is enabled
     if (!vscode.env.isTelemetryEnabled) {
         return;
