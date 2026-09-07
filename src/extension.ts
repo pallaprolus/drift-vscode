@@ -22,9 +22,17 @@ let stateManager: StateManager;
 let semanticAnalyzer: SemanticAnalyzer;
 
 /**
+ * Small API returned from activate() for integration tests and other extensions.
+ */
+export interface DriftApi {
+    getAllResults(): DocCodePair[];
+    exportReport(format: ReportFormat, target: vscode.Uri): Promise<void>;
+}
+
+/**
  * Extension activation
  */
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<DriftApi> {
     DriftLogger.initialize('Drift');
     DriftLogger.log('Drift extension activated');
 
@@ -111,6 +119,28 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     sendActivationPing(context);
 
     DriftLogger.log('Drift extension ready');
+
+    return {
+        getAllResults: () => scanner.getAllResults(),
+        exportReport: (format, target) => writeReport(format, scanner.getAllResults(), target)
+    };
+}
+
+/**
+ * Generate a report for the given pairs and write it to disk.
+ */
+async function writeReport(format: ReportFormat, allPairs: DocCodePair[], target: vscode.Uri): Promise<void> {
+    const folder = vscode.workspace.workspaceFolders?.[0];
+    const config = loadConfig();
+    const content = generateReport(format, allPairs, {
+        workspaceName: folder?.name ?? 'workspace',
+        workspaceRoot: folder?.uri.fsPath ?? '',
+        threshold: config.driftThreshold,
+        includeReviewed: false,
+        gitInfo: scanner.getGitInfo()
+    });
+    await vscode.workspace.fs.writeFile(target, Buffer.from(content, 'utf8'));
+    DriftLogger.log(`Report exported to ${target.fsPath}`);
 }
 
 /**
@@ -350,9 +380,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
                 format = picked.value;
             }
 
-            const folder = vscode.workspace.workspaceFolders?.[0];
-            const workspaceRoot = folder?.uri.fsPath ?? '';
-            const workspaceName = folder?.name ?? 'workspace';
+            const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '';
             const ext = format === 'markdown' ? 'md' : format;
             const defaultUri = vscode.Uri.file(path.join(workspaceRoot || os.homedir(), `drift-report.${ext}`));
 
@@ -369,17 +397,7 @@ function registerCommands(context: vscode.ExtensionContext): void {
                 return;
             }
 
-            const config = loadConfig();
-            const content = generateReport(format, allPairs, {
-                workspaceName,
-                workspaceRoot,
-                threshold: config.driftThreshold,
-                includeReviewed: false,
-                gitInfo: scanner.getGitInfo()
-            });
-
-            await vscode.workspace.fs.writeFile(target, Buffer.from(content, 'utf8'));
-            DriftLogger.log(`Report exported to ${target.fsPath}`);
+            await writeReport(format, allPairs, target);
 
             const action = await vscode.window.showInformationMessage(
                 `Drift report saved to ${path.basename(target.fsPath)}`,
