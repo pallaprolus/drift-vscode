@@ -1,0 +1,109 @@
+name: Publish
+
+# Releases happen when the version in package.json changes on main.
+# A manual run (workflow_dispatch) publishes the current version if its tag does not exist yet.
+
+on:
+  push:
+    branches: [main]
+    paths: ['package.json']
+  workflow_dispatch:
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.check.outputs.should_publish }}
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          fetch-tags: true
+      - id: check
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          git show HEAD~1:package.json > /tmp/old.json 2>/dev/null || echo '{"version":"0.0.0"}' > /tmp/old.json
+          PREVIOUS=$(node -p "require('/tmp/old.json').version")
+          echo "current=$CURRENT previous=$PREVIOUS event=${{ github.event_name }}"
+          if git rev-parse "v$CURRENT" >/dev/null 2>&1; then
+            echo "Tag v$CURRENT already exists, nothing to publish"
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          elif [ "$CURRENT" != "$PREVIOUS" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+          else
+            echo "Version unchanged, nothing to publish"
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  test:
+    needs: check-version
+    if: needs.check-version.outputs.should_publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check-types
+      - run: npm run test:unit
+      - run: xvfb-run -a node ./out/test/runTest.js
+
+  publish:
+    needs: [check-version, test]
+    if: needs.check-version.outputs.should_publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.check-version.outputs.version }}
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+
+      - name: Build and package (deps are bundled by esbuild)
+        run: npx @vscode/vsce package --no-dependencies
+
+      - name: Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "Release v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: Publish to VS Code Marketplace
+        run: npx @vscode/vsce publish --packagePath "drift-$VERSION.vsix" -p "$VSCE_PAT"
+
+      - name: Publish to Open VSX
+        if: env.OVSX_PAT != ''
+        run: npx --yes ovsx publish "drift-$VERSION.vsix" -p "$OVSX_PAT"
+
+      - name: Release notes from CHANGELOG
+        run: |
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" {p=1; next}
+            p && /^## \[/ {exit}
+            p {print}
+          ' CHANGELOG.md > /tmp/notes.md
+          if [ ! -s /tmp/notes.md ]; then echo "Release v$VERSION" > /tmp/notes.md; fi
+          printf '\n**Install:** search for "Drift - Documentation Sync Detector" in VS Code, or `code --install-extension pallaprolus.drift`. Also on [Open VSX](https://open-vsx.org/extension/pallaprolus/drift).\n' >> /tmp/notes.md
+
+      - name: GitHub release
+        run: gh release create "v$VERSION" "drift-$VERSION.vsix" --title "v$VERSION" --notes-file /tmp/notes.md --latest
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drift-v${{ needs.check-version.outputs.version }}
+          path: '*.vsix'
+          retention-days: 30

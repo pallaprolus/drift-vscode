@@ -261,6 +261,10 @@ code --extensionDevelopmentPath=.
 npm run test:unit
 ```
 
+### Releasing
+
+Releases are automated. Bump `version` in `package.json` (and add a section to `CHANGELOG.md`), push to `main`, and the Publish workflow runs the tests, publishes to the VS Code Marketplace and Open VSX, tags `vX.Y.Z`, and creates a GitHub release with the `.vsix` attached. A version whose tag already exists is never republished.
+
 ### Adding Language Support
 
 To add support for a new language:
