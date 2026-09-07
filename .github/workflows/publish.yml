@@ -19,14 +19,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-          fetch-tags: true
       - id: check
         run: |
           CURRENT=$(node -p "require('./package.json').version")
           git show HEAD~1:package.json > /tmp/old.json 2>/dev/null || echo '{"version":"0.0.0"}' > /tmp/old.json
           PREVIOUS=$(node -p "require('/tmp/old.json').version")
           echo "current=$CURRENT previous=$PREVIOUS event=${{ github.event_name }}"
-          if git rev-parse "v$CURRENT" >/dev/null 2>&1; then
+          # Ask the remote, not the shallow local clone, whether the tag exists
+          if [ -n "$(git ls-remote --tags origin "refs/tags/v$CURRENT")" ]; then
             echo "Tag v$CURRENT already exists, nothing to publish"
             echo "should_publish=false" >> "$GITHUB_OUTPUT"
           elif [ "$CURRENT" != "$PREVIOUS" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
