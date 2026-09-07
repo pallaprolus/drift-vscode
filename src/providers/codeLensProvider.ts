@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { DocCodePair } from '../models/types';
+import { DocCodePair, DocType, DriftType } from '../models/types';
 import { StateManager } from './stateManager';
 
 /**
@@ -11,9 +11,11 @@ export class DriftCodeLensProvider implements vscode.CodeLensProvider {
     
     private pairs: Map<string, DocCodePair[]> = new Map();
     private stateManager: StateManager;
+    private aiEnabled: () => boolean;
     
-    constructor(stateManager: StateManager) {
+    constructor(stateManager: StateManager, aiEnabled: () => boolean = () => false) {
         this.stateManager = stateManager;
+        this.aiEnabled = aiEnabled;
     }
     
     /**
@@ -52,8 +54,28 @@ export class DriftCodeLensProvider implements vscode.CodeLensProvider {
         }
         
         const codeLenses: vscode.CodeLens[] = [];
+        const aiEnabled = this.aiEnabled();
         
         for (const pair of documentPairs) {
+            // README code blocks: only surface the drift summary
+            if (pair.docType === DocType.ReadmeCodeBlock) {
+                if (pair.driftScore > 0 && !pair.isReviewed) {
+                    const mdRange = new vscode.Range(pair.docRange.start.line, 0, pair.docRange.start.line, 0);
+                    codeLenses.push(new vscode.CodeLens(mdRange, {
+                        title: `$(warning) ${Math.round(pair.driftScore * 100)}% drift: ${pair.driftReasons[0]?.message ?? 'out of sync with code'}`,
+                        tooltip: pair.driftReasons.map(r => r.message).join('\n'),
+                        command: 'drift.showDriftDetails',
+                        arguments: [pair]
+                    }));
+                    codeLenses.push(new vscode.CodeLens(mdRange, {
+                        title: '$(check) Mark as Reviewed',
+                        command: 'drift.markAsReviewed',
+                        arguments: [{ id: pair.id }]
+                    }));
+                }
+                continue;
+            }
+
             const status = this.stateManager.getTrackingStatus(pair);
             const range = new vscode.Range(
                 pair.docRange.start.line,
@@ -95,6 +117,18 @@ export class DriftCodeLensProvider implements vscode.CodeLensProvider {
                     title: '$(check) Synced',
                     tooltip: 'Documentation is in sync with code',
                     command: ''
+                }));
+            }
+
+            if (aiEnabled && !pair.isReviewed) {
+                const hasAiResult = pair.driftReasons.some(r => r.type === DriftType.SemanticMismatch);
+                codeLenses.push(new vscode.CodeLens(range, {
+                    title: hasAiResult ? '$(sparkle) AI: drift found' : '$(sparkle) AI Check',
+                    tooltip: hasAiResult
+                        ? 'AI detected semantic drift. Click to re-run the check.'
+                        : 'Ask an AI model whether this documentation still describes the code',
+                    command: 'drift.analyzeSemantic',
+                    arguments: [pair]
                 }));
             }
         }

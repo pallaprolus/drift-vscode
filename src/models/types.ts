@@ -86,7 +86,10 @@ export enum DriftType {
     DescriptionMismatch = 'description_mismatch',
     MissingDocumentation = 'missing_documentation',
     OrphanedDocumentation = 'orphaned_documentation',
-    DeprecatedReference = 'deprecated_reference'
+    DeprecatedReference = 'deprecated_reference',
+    ReadmeReference = 'readme_reference',
+    GitChange = 'git_change',
+    SemanticMismatch = 'semantic_mismatch'
 }
 
 export enum DriftSeverity {
@@ -160,6 +163,15 @@ export interface DriftConfig {
     excludePatterns: string[];
     supportedLanguages: string[];
     driftThreshold: number;
+    // README / Markdown code block synchronization
+    scanMarkdown: boolean;
+    markdownPatterns: string[];
+    // Git integration
+    gitEnabled: boolean;
+    gitStaleDays: number;
+    // AI semantic analysis
+    aiProvider: 'auto' | 'anthropic' | 'vscode' | 'off';
+    aiModel: string;
 }
 
 /**
@@ -183,4 +195,37 @@ export interface DriftTreeItem {
     description: string;
     tooltip: string;
     iconPath?: vscode.ThemeIcon;
+}
+
+/**
+ * Lightweight description of a code symbol, used to cross-reference
+ * README / Markdown code blocks against real code.
+ */
+export interface SymbolEntry {
+    name: string;
+    filePath: string;
+    line: number;
+    signature: CodeSignature;
+}
+
+/**
+ * A fenced code block found in a Markdown document
+ */
+export interface MarkdownCodeBlock {
+    language: string;
+    content: string;
+    /** 0-based line of the opening fence */
+    startLine: number;
+    /** 0-based line of the closing fence */
+    endLine: number;
+}
+
+/**
+ * Git metadata for a doc-code pair
+ */
+export interface GitPairInfo {
+    docLastChanged?: Date;
+    codeLastChanged?: Date;
+    codeChangedInWorkingTree: boolean;
+    docChangedInWorkingTree: boolean;
 }

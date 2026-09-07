@@ -21,6 +21,9 @@ export class DriftAnalyzer {
     private readonly returnTypeMismatchWeight = 0.2;
     private readonly signatureChangeWeight = 0.25;
     private readonly descriptionMismatchWeight = 0.15;
+    private readonly readmeReferenceWeight = 0.4;
+    private readonly gitChangeWeight = 0.2;
+    private readonly semanticMismatchWeight = 0.35;
 
     /**
      * Analyze a doc-code pair for drift
@@ -275,7 +278,7 @@ export class DriftAnalyzer {
     /**
      * Calculate overall drift score from reasons
      */
-    private calculateDriftScore(reasons: DriftReason[]): number {
+    calculateDriftScore(reasons: DriftReason[]): number {
         if (reasons.length === 0) {return 0;}
 
         let score = 0;
@@ -299,6 +302,15 @@ export class DriftAnalyzer {
                     break;
                 case DriftType.DescriptionMismatch:
                     weight = this.descriptionMismatchWeight;
+                    break;
+                case DriftType.ReadmeReference:
+                    weight = this.readmeReferenceWeight;
+                    break;
+                case DriftType.GitChange:
+                    weight = this.gitChangeWeight;
+                    break;
+                case DriftType.SemanticMismatch:
+                    weight = this.semanticMismatchWeight;
                     break;
                 default:
                     weight = 0.1;

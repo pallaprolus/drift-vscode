@@ -1,8 +1,8 @@
 {
   "name": "drift",
   "displayName": "Drift - Documentation Sync Detector",
-  "description": "Detect when documentation drifts out of sync with your code",
-  "version": "0.5.1",
+  "description": "Detect when documentation drifts out of sync with your code: JSDoc, docstrings, README code blocks, Git history, and optional AI semantic checks",
+  "version": "0.6.0",
   "publisher": "pallaprolus",
   "icon": "images/icon.png",
   "repository": {
@@ -10,7 +10,7 @@
     "url": "https://github.com/pallaprolus/drift-vscode"
   },
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other",
@@ -22,7 +22,11 @@
     "sync",
     "drift",
     "comments",
-    "maintenance"
+    "maintenance",
+    "readme",
+    "jsdoc",
+    "docstring",
+    "ai"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -32,7 +36,8 @@
     "commands": [
       {
         "command": "drift.scanWorkspace",
-        "title": "Drift: Scan Workspace for Documentation Drift"
+        "title": "Drift: Scan Workspace for Documentation Drift",
+        "icon": "$(search)"
       },
       {
         "command": "drift.scanCurrentFile",
@@ -48,7 +53,29 @@
       },
       {
         "command": "drift.refreshDashboard",
-        "title": "Drift: Refresh Dashboard"
+        "title": "Drift: Refresh Dashboard",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "drift.exportReport",
+        "title": "Drift: Export Report (Markdown, HTML, JSON)",
+        "icon": "$(export)"
+      },
+      {
+        "command": "drift.analyzeSemantic",
+        "title": "Drift: AI Check Documentation at Cursor"
+      },
+      {
+        "command": "drift.analyzeSemanticFile",
+        "title": "Drift: AI Check All Documentation in Current File"
+      },
+      {
+        "command": "drift.setAnthropicApiKey",
+        "title": "Drift: Set Anthropic API Key"
+      },
+      {
+        "command": "drift.clearAnthropicApiKey",
+        "title": "Drift: Clear Anthropic API Key"
       }
     ],
     "views": {
@@ -72,12 +99,34 @@
           "command": "drift.scanWorkspace",
           "when": "view == driftDashboard",
           "group": "navigation"
+        },
+        {
+          "command": "drift.exportReport",
+          "when": "view == driftDashboard",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
           "command": "drift.markAsReviewed",
           "when": "view == driftDashboard && viewItem == driftItem"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "drift.analyzeSemantic",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "drift.analyzeSemanticFile",
+          "when": "editorIsOpen"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "drift.analyzeSemantic",
+          "when": "editorTextFocus && resourceLangId =~ /^(typescript|javascript|typescriptreact|javascriptreact|python|go|rust|java)$/",
+          "group": "drift@1"
         }
       ]
     },
@@ -109,12 +158,12 @@
           "default": [
             "javascript",
             "typescript",
+            "javascriptreact",
+            "typescriptreact",
             "python",
             "go",
             "java",
-            "rust",
-            "c",
-            "cpp"
+            "rust"
           ],
           "description": "Languages to scan for documentation drift"
         },
@@ -124,6 +173,55 @@
           "minimum": 0,
           "maximum": 1,
           "description": "Confidence threshold (0-1) for flagging documentation as potentially stale"
+        },
+        "drift.scanMarkdown": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check code blocks in README and other Markdown files against the real code (renamed functions, changed signatures, wrong argument counts)"
+        },
+        "drift.markdownPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/README.md",
+            "**/docs/**/*.md"
+          ],
+          "description": "Glob patterns (relative to the workspace) of Markdown files whose code blocks are checked"
+        },
+        "drift.git.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use Git history to flag code that changed more recently than its documentation, and uncommitted code edits whose docs were not touched"
+        },
+        "drift.git.staleDays": {
+          "type": "number",
+          "default": 30,
+          "minimum": 0,
+          "description": "Flag documentation when the code was committed this many days (or more) after the documentation was last changed"
+        },
+        "drift.ai.provider": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "anthropic",
+            "vscode",
+            "off"
+          ],
+          "enumDescriptions": [
+            "Use Anthropic when an API key is set, otherwise the VS Code language model API (e.g. GitHub Copilot)",
+            "Always use the Anthropic API (requires \"Drift: Set Anthropic API Key\")",
+            "Always use the VS Code language model API (requires a chat provider such as GitHub Copilot)",
+            "Disable AI checks and hide the AI CodeLens"
+          ],
+          "default": "auto",
+          "description": "Provider for on-demand AI semantic drift checks. Drift never sends code to an AI provider automatically; you trigger each check"
+        },
+        "drift.ai.model": {
+          "type": "string",
+          "default": "claude-opus-5",
+          "description": "Anthropic model ID used for AI semantic checks (only applies to the Anthropic provider)"
         }
       }
     }
@@ -136,13 +234,15 @@
     "check-types": "tsc --noEmit",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "test:unit": "tsc -p . --outDir out && node runUnitTests.js"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
     "@types/chai": "^5.2.3",
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.10.0",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "1.90.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
     "@vscode/test-electron": "^2.5.2",
@@ -151,11 +251,9 @@
     "esbuild": "^0.27.0",
     "eslint": "^8.54.0",
     "glob": "^13.0.0",
+    "minimatch": "^9.0.3",
     "mocha": "^11.7.5",
     "typescript": "^5.3.0"
-  },
-  "dependencies": {
-    "minimatch": "^9.0.3"
   },
   "bugs": {
     "url": "https://github.com/pallaprolus/drift-vscode/issues"
